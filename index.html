@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>borogove</title>
+    <style>
+      *, *:before, *:after {
+	  box-sizing: inherit;
+      }
+      body {
+	  box-sizing: border-box;
+	  margin: 0;
+	  position: relative;
+
+	  color: #111;
+	  background-color: #f0f0f0;
+
+	  font-family: sans-serif;
+      }
+      textarea {
+	  color: inherit;
+	  background-color: inherit;
+	  font-family: inherit;
+
+	  outline: none;
+	  border: none;
+	  
+	  width: 100%;
+	  height: 100vh;
+	  margin: 0;
+	  padding: 1em;
+	  padding-top: 4em;
+	  
+	  resize: none;
+      }
+      header {
+	  position: fixed;
+	  top: 0;
+
+	  width: 100%;
+	  height: 2em;
+
+	  display: table;
+	  
+	  border-bottom: 1px solid #ccc;
+      }
+      .header-content {
+	  display: table-cell;
+	  vertical-align: middle;
+	  
+	  padding: 0 1ex;
+
+	  color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">borogove &middot; about</div>
+      <script>
+
+	let corpus = {
+	    alice: '',
+	    kjb: '',
+	    dante: '',
+	};
+	for (let k in corpus) {
+	    fetch('http://localhost:8000/corpus/' + k + '.json')
+		.then(resp => resp.json())
+		.then(json => { corpus[k] = json; });	    
+	}
+	corpus.toy = [
+	    "THIS", "IS", "A", "CAT.",
+	    "THIS", "IS", "NOT", "A", "BAT."
+	];
+	
+	function make_leaf () {
+	    let el = Object.create(null);
+	    el.total = 0;
+	    el.next = Object.create(null);
+	    return el;
+	}
+
+	function make_markov (lvl) {
+	    let m = Object.create(null);
+	    m.level = lvl;
+	    m.tree = make_leaf();
+	    return m;
+	}
+	
+	function markov_push (m, arr) {
+	    
+	    for (let i = m.level; i < arr.length; ++i) {
+		let node = m.tree;
+		let w;
+
+		for (j = i-m.level; j <= i; ++j) {
+		    w = arr[j];
+		    ++node.total;
+		    node = (node.next[w] = node.next[w] || make_leaf());
+		}
+		++node.total;
+	    }
+	    return m;
+	}
+
+	function markov_select (leaf) {
+	    let r = Math.random() * leaf.total;
+	    let s = 0;
+	    for (let w in leaf.next) {
+		if ((s += leaf.next[w].total) > r) { return w; }
+	    }
+	}
+	function markov_step (m, tail) {
+	    let len = tail.length;
+	    let node = m.tree;
+	    for (let j = len - m.level; j < len; ++j) {
+		node = node.next[tail[j]];
+		if (!node) {
+		    /* if terminated, start over. */
+		    return markov_select(m.tree);
+		}
+	    }
+
+	    return markov_select(node);
+	}
+
+	</script>
+    </header>
+    <textarea></textarea>
+  </body>
+</html>
