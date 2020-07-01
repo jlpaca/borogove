@@ -53,26 +53,28 @@ edit_box.addEventListener('keydown', e => {
 });
 
 
-function add_to_model () {
-
+function tail_of (s) {
     let depth = m_model.level;
     let tail = [];
-
-    // try out best to grab some context off the end of what's
-    // already processed. hopefully this loop usually runs, like, once.
     for (let backcount = 128; ; backcount *= 2) {
-	
-	tail = prev_tx
+	tail = s
 	    .slice(-backcount)
 	    .split(split_ch).filter(w => w !== '');
-	
-	if (tail.length >= depth + 1) { // fricking off-by-one errors
+	if (tail.length >= depth + 1) {
 	    tail = tail.slice(-depth);
 	    break;
 	} else if (backcount > prev_tx.length) {
 	    break;
 	}
     }
+    return tail;
+}
+
+function add_to_model () {
+
+    let depth = m_model.level;
+
+    let tail = tail_of(prev_tx);
     let head = live_tx.split(split_ch).filter(w => w !== '');
 
     if (tail.length + head.length - (in_word ? 1 : 0) < depth + 1) {
@@ -90,6 +92,7 @@ function add_to_model () {
 	for (; i < head.length; ++i) { tail.push(head[i]); }
 
 	// add to model:
+	console.log('add to model: ', tail);
 	markov_push(m_model, tail);
 	
 	in_word = false;
@@ -99,3 +102,7 @@ function add_to_model () {
     }
 
 }
+
+let autowrite_timer = undefined;
+
+
