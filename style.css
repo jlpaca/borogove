@@ -46,7 +46,7 @@ body {
     color: #444;
 }
 #edit-content {
-    white-space: pre;
+    white-space: pre-wrap;
     position: relative;
 }
 #edit-content::selection {

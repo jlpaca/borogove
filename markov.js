@@ -69,6 +69,8 @@ function markov_step (m, tail, depth) {
 	}
 	node = node.next[w];
     }
-    tail.push(markov_select(node));
-    return tail;
+
+    let word = markov_select(node);
+    tail.push(word);
+    return word;
 }

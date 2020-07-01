@@ -25,6 +25,8 @@ let wstop = 0;  // index of first unprocessed word
 
 let m_model = make_markov(2);
 
+markov_push(m_model, corpus.toy);
+
 edit_box.addEventListener('keydown', e => {
     let k = e.key.toUpperCase();
 
@@ -40,16 +42,20 @@ edit_box.addEventListener('keydown', e => {
 	e.preventDefault();
 	
 	console.log(words);
-	prev_text.innerHTML = prev;
-	live_text.innerHTML = live;
-
-	cursor.scrollIntoView({
-	    block: 'nearest',
-	    behavior: 'smooth'
-	});
+	refresh_view();
     }
     
 });
+
+function refresh_view () {
+    prev_text.innerHTML = prev;
+    live_text.innerHTML = live;
+
+    cursor.scrollIntoView({
+	block: 'nearest',
+	behavior: 'smooth'
+    });
+}
 
 function insert_char (ch) {
     if (split_ch.test(ch)) {
@@ -88,5 +94,26 @@ function update_model () {
 	wstop = words.length;
     }
 
+}
+
+
+let autowrite_interval = 500;
+
+function autowrite () {
+    live = '';
+    window.setInterval(() => {
+	word = markov_step(m_model, words);
+
+	// cute little animation
+	let ch_interval = Math.min(80, autowrite_interval/word.length);
+
+	prev += ' ';
+	for (let i = 0; i < word.length; ++i) {
+	    window.setTimeout(() => {
+		prev += word[i];
+		refresh_view();
+	    }, i * ch_interval);
+	}
+    }, autowrite_interval);
 }
 
