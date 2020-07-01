@@ -12,7 +12,7 @@
 	  margin: 0;
 	  position: relative;
 
-	  color: #444;
+	  color: #ccc;
 	  background-color: #f0f0f0;
 
 	  min-height: 100vh;
@@ -20,11 +20,15 @@
 	  font-family: sans-serif;
       }
       .header {
+	  position: fixed;
+	  top: 0;
+
 	  width: 100%;
 	  height: 2em;
 	  
 	  display: table;
-	  color: #ccc;
+	  white-space: nowrap;
+	  
 	  border-bottom: 1px solid #ccc;
       }
       .header-content {
@@ -32,27 +36,24 @@
 	  padding: 0 1em;
 	  vertical-align: middle;
       }
-
       #text {
+	  white-space: pre;
 
-	  color: inherit;
-	  background-color: inherit;
-	  font-family: inherit;
-	  
-	  margin: none;
-	  border: none;
-	  outline: none;
-	  box-shadow: none;
+	  position: fixed;
+	  top: 2em;
+	  bottom: 1em;
+	  overflow: scroll;
 	  
 	  width: 100%;
-	  height: 100vh;
-	  padding: 2em 1em;
-
-	  text-transform: uppercase;
+	  padding: 1em;
       }
       #text::selection {
 	  background: #444;
 	  color: #fff;
+      }
+      #text:focus {
+	  outline: none;
+	  color: #444;
       }
     </style>
     <script>
@@ -63,11 +64,11 @@
 	  dante: [],
       };
       /*
-      for (let k in corpus) {
-	  fetch('http://localhost:8000/corpus/' + k + '.json')
-	      .then(resp => resp.json())
-	      .then(json => { corpus[k] = json; });	    
-      }
+       for (let k in corpus) {
+       fetch('http://localhost:8000/corpus/' + k + '.json')
+       .then(resp => resp.json())
+       .then(json => { corpus[k] = json; });	    
+       }
       */
       corpus.toy = [
 	  "THIS", "IS", "A", "CAT.",
@@ -133,62 +134,111 @@
     </script>
   </head>
   <body>
-    <div class="header"><div class="header-content">borogove &middot; about</div></div>
-    <textarea id="text">SOME TEXT</textarea>
+    <div class="header"><div class="header-content">borogove &middot; settings &middot; about</div></div>
+    <div id="text" tabindex="0"></div>
     <script>
 
-      let t_limit = 1000;
-      let t_increment = 500;
-      let timer;
+      const edit_box = document.getElementById("text");
+      const valid_ch = /^[ -~]$/; // stupid anglo-centric character set
+      const split_ch = /\s+/; // delimiters
       
-      const D = document.getElementById("text");
-      let T = undefined;
-      let A = undefined;
+      let prev_tx = ''; // the text in the input area that's been
+      // processed so far.
       
+      let live_tx = ''; // the text in the input area that hasn't yet
+      // been processed. usually the last line but
+      // there are awful edge cases.
+
+      let in_word = false;
       
-      function autowrite_start () {
-	  console.log("start autowrite:");
+      let m_model = make_markov(2);
 
-	  /* build the markov chain out of the text entered so
-	   far. ideally we would want to dynamically update this as
-	   the user types, but, i mean, have you tried keeping track
-	   of input events? */
+      edit_box.addEventListener('keydown', e => {
+	  
+	  const k = e.key.toUpperCase();
+	  let action = true
+	  
+	  if (k === 'ENTER') {
+	      // entered a newline.
+	      live_tx += '\n';
+	      
+	  } else if (k === 'BACKSPACE' || k === 'DELETE') {
+	      // deleted a character.
 
-	  let words = D.value.toUpperCase().split(/\s+/).filter(w => w != '');
+	      // this much slicing cannot be good for my health
+	      if (live_tx.length) {
+		  live_tx = live_tx.slice(0, -1);
+	      } else {
+		  prev_tx = prev_tx.slice(0, -1);
+		  in_word = prev_tx.length && !split_ch.test(prev_tx[prev_tx.length-1]);
+	      }
 
-	  let M = make_markov(2);
+	  } else if (valid_ch.test(k)) {
+	      // entered a printable ascii character.
+	      live_tx += k;
+	      
+	  } else {
+	      action = false;
+	      console.log(k);
+	  }
+	 	  
+  	  edit_box.innerHTML = prev_tx + '<span style="color:#f00">' + live_tx  + '_</span>';
 
-	  if (words.length < M.level) {
-	      /* not enough words yet, abort */
-	      return;
+	  
+	  if (action) {
+	      e.preventDefault();
+	      edit_box.scrollTop = edit_box.scrollHeight - edit_box.clientHeight;
 	  }
 
-	  markov_push(M, words);
-
-	  A = {
-	      markov: M,
-	      tail: words.slice(-M.level),
-	      interval: window.setInterval(() => {
-		  markov_step(A.markov, A.tail, A.markov.level);
-		  console.log(A.tail[A.tail.length-1]);
-	      }, t_increment)
-	  };
-      }
-
-      function autowrite_stop () {
-	  console.log("stop autowrite.");
-	  if (A) {
-	      window.clearInterval(A.interval);
-	  }
-      }
-      
-      D.addEventListener('input', e => {
-	  autowrite_stop();
-
-	  if (timer) { window.clearTimeout(timer); }
-	  timer = window.setTimeout(autowrite_start, t_limit);
       });
 
+
+      function add_to_model () {
+
+	  let depth = m_model.level;
+	  let tail = [];
+
+	  // try out best to grab some context off the end of what's
+	  // already processed. hopefully this loop usually runs, like, once.
+	  for (let backcount = 128; ; backcount *= 2) {
+	      
+	      tail = prev_tx
+		  .slice(-backcount)
+		  .split(split_ch).filter(w => w !== '');
+	      
+	      if (tail.length >= depth + 1) { // fricking off-by-one errors
+		  tail = tail.slice(-depth);
+		  break;
+	      } else if (backcount > prev_tx.length) {
+		  break;
+	      }
+	  }
+	  let head = live_tx.split(split_ch).filter(w => w !== '');
+
+	  if (tail.length + head.length - (in_word ? 1 : 0) < depth + 1) {
+	      // if we don't have enough content yet, wait.
+	      console.log('wait.');
+	  } else {
+	      // if we've cut a word in half, paste it back together
+	      // before adding it to the model.
+	      let i = 0;
+	      if (in_word) {
+		  tail[tail.length-1] += head[0];
+		  ++i;
+		  console.log('recover word: ' + tail[tail.length-1]);
+	      }
+	      for (; i < head.length; ++i) { tail.push(head[i]); }
+
+	      // add to model:
+	      markov_push(m_model, tail);
+	      
+	      in_word = false;
+	      
+	      prev_tx += live_tx;
+	      live_tx = '';
+	  }
+
+      }
       
     </script>
   </body>
