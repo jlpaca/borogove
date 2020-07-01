@@ -30,22 +30,39 @@ body {
     padding: 0 1em;
     vertical-align: middle;
 }
-#text {
-    white-space: pre;
-
+#edit-box {
     position: fixed;
     top: 2em;
-    bottom: 1em;
-    overflow: scroll;
+    bottom: 0;
+    overflow: auto;
     
     width: 100%;
     padding: 1em;
+
+    color: #777;
 }
-#text::selection {
+#edit-box:focus {
+    outline: none;
+    color: #444;
+}
+#edit-content {
+    white-space: pre;
+    position: relative;
+}
+#edit-content::selection {
     background: #444;
     color: #fff;
 }
-#text:focus {
-    outline: none;
-    color: #444;
+#prev-text {
+}
+#live-text {
+    text-decoration: underline;
+}
+#cursor{
+}
+.scroll-stop {
+    position:absolute;
+    bottom: -50vh;
+    width: 100%;
+    height: 50vh;
 }

@@ -31,6 +31,7 @@ function make_markov (lvl) {
 }
 
 function markov_push (m, arr) {
+    console.log("add to model: " + arr);
     for (let i = m.level; i < arr.length; ++i) {
 	let node = m.tree;
 	let w;
