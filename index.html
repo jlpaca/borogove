@@ -89,7 +89,6 @@
 	}
 	
 	function markov_push (m, arr) {
-	    
 	    for (let i = m.level; i < arr.length; ++i) {
 		let node = m.tree;
 		let w;
@@ -111,21 +110,26 @@
 		if ((s += leaf.next[w].total) > r) { return w; }
 	    }
 	}
-	function markov_step (m, tail) {
+
+	function markov_step (m, tail, depth) {
 	    let len = tail.length;
+	    if (depth === undefined) { depth = m.level; }
+	    depth = Math.min(depth, len);
+
 	    let node = m.tree;
-	    for (let j = len - m.level; j < len; ++j) {
-		node = node.next[tail[j]];
-		if (!node) {
-		    /* if terminated, start over. */
-		    return markov_select(m.tree);
+	    let w;
+	    for (let j = len - depth; j < len; ++j) {
+		w = tail[j];
+		if (!node.next[w]) {
+		    /* if terminated; try with shorter inference */
+		    return markov_step(m, tail, depth-1);
 		}
+		node = node.next[w];
 	    }
-
-	    return markov_select(node);
+	    tail.push(markov_select(node));
+	    return tail;
 	}
-
-	</script>
+      </script>
     </header>
     <textarea></textarea>
   </body>
