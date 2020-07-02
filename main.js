@@ -10,7 +10,7 @@ const valid_ch = /^[ -~]$/;
 
 // delimiters. explicitly checking spaces and newlines might be
 // faster? but probably doesn't matter
-const split_ch = /\s+/;
+const split_ch = / +/
 
 // the text in the input area that's beenprocessed
 // so far:
@@ -32,7 +32,15 @@ edit_box.addEventListener('keydown', e => {
 
     let action_flag = true;
     
-    if (k === 'ENTER')                            insert_char('\n');
+    if (k === 'ENTER') {
+	insert_char(' ');
+	insert_char('\n');
+	// this is a trick (TM) : every line has a trailing space
+	// appended to it so that when we split the line at spaces we
+	// remember the beginning of lines. delete_char treats this
+	// special case by removing two characters instead of one
+	// whenever backspacing into a newline.
+    }
     else if (k === 'BACKSPACE' || k === 'DELETE') delete_char();
     else if (k === '+')                           update_model();
     else if (valid_ch.test(k))                    insert_char(k);
@@ -71,7 +79,7 @@ function delete_char () {
     if (live.length) {
 	live = live.slice(0, -1);
     } else {
-	prev = prev.slice(0, -1);
+	prev = prev.slice(0, prev[prev.length - 1] === '\n' ? -2 : -1);
 	if (words.length
 	    && !split_ch.test(prev[prev.length-1])) {
 	    live = words[words.length - 1]; words.pop();
