@@ -6,22 +6,12 @@ body {
     margin: 0;
     position: relative;
 
-    color: #666;
+    color: #333;
     background-color: #fcfcfc;
 
     min-height: 100vh;
     
     font-family: 'Zilla Slab',  serif;
-}
-.header {
-    position: fixed;
-    top: 0;
-
-    width: 100%;
-    height: 2em;
-
-    display: table;
-    white-space: nowrap;
 }
 
 a:link {
@@ -39,11 +29,54 @@ a:active {
     color: inherit;
 }
 
+/* header : links & options */
+.header {
+    position: fixed;
+    top: 0;
+
+    width: 100%;
+    height: 2em;
+
+    display: table;
+    white-space: nowrap;
+
+    color: #666;
+}
+
 .header-content {
     display: table-cell;
     padding: 0 1em;
     vertical-align: middle;
 }
+
+/* settings panel */
+#settings-box {
+    position: fixed;
+    top: 2em;
+    bottom: 2em;
+
+    width: 100%;
+    padding: 1em;
+
+    background-color: inherit;
+    visibility: hidden;
+}
+.settings-label {
+    border-bottom: 1px solid #666;
+    margin-bottom: 0.5em;
+}
+.settings-row {
+    margin: 1em;
+}
+input[type=radio] {
+    vertical-align: middle;
+}
+label {
+    vertical-align: middle;
+}
+
+
+/* main edit area */
 #edit-box {
     position: fixed;
     top: 2em;
@@ -81,6 +114,7 @@ a:active {
     height: 50vh;
 }
 
+/* footer: status message & progress bar */
 .footer {
     position: absolute;
     bottom: 0;
