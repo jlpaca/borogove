@@ -50,6 +50,13 @@ edit_box.addEventListener('keydown', e => {
 	// whenever backspacing into a newline.
     }
     else if (k === 'BACKSPACE' || k === 'DELETE') delete_char();
+    else if (k === 'ESCAPE') {
+	edit_box.blur();
+	autowrite_disable();
+	action_flag = false;
+	// implemented as a special case: the escape key removes the
+	// focus from the edit area.
+    }
     else if (k === '+')                           update_model();
     else if (valid_ch.test(k))                    insert_char(k);
     else                                          action_flag = false;
@@ -227,3 +234,83 @@ function status_update (msg, trs) {
     }, 3000);
 
 }
+
+// awful, awful user interface code.
+const settings_box = document.getElementById("settings-box");
+const inpt_weight  = document.getElementById("weight");
+
+const settings_val = {
+    corpus: 'alice',
+    depth: 1,
+    weight: 32,
+};
+
+function get_opt_value (name) {
+    const opts = document.getElementsByName(name);
+    for (let i = 0; i < opts.length; ++i) {
+	if (opts[i].checked) return opts[i].value;
+    }
+}
+function set_opt_value (name, val) {
+    const opts = document.getElementsByName(name);
+    for (let i = 0; i < opts.length; ++i) {
+	opts[i].checked = opts[i].id === name +  '-' + val;
+    }
+}
+function get_num_value (name) {
+    return document.getElementsByName(name)[0].value;
+}
+function set_num_value (name, val) {
+    document.getElementsByName(name)[0].value = val;
+}
+
+function get_settings (v) {
+    v = v || {};
+
+    v.corpus = get_opt_value('corpus');
+    v.depth  = get_opt_value('depth');
+    v.weight = get_num_value('weight');
+
+    return v;
+}
+function set_settings (v) {
+    set_opt_value('corpus', v.corpus);
+    set_opt_value('depth',  v.depth);
+    set_num_value('weight', v.weight);
+}
+function validate_settings (v) {
+    if (['alice', 'kjb', 'dante'].indexOf(v.corpus) < 0) return false;
+    if (["0", "1", "2"].indexOf(v.depth) < 0) return false;
+    if (!inpt_weight.validity.valid) return false;
+    // not sure about support on the validity API.
+    return true;
+}
+
+document.getElementById('nav-settings').addEventListener('click', () => {
+    settings_box.focus();
+    settings_box.style.visibility = "visible";
+});
+
+document.getElementById('settings-done').addEventListener('click', () => {
+    // if all the settings are valid, generate a new model.
+    let v = get_settings();
+    if (validate_settings(v)) {
+
+	set_settings(v);
+	
+	console.log(settings_val);
+	
+	settings_box.style.visibility = "hidden";
+    } else {
+	console.log(v);
+    }
+});
+document.getElementById('settings-cancel').addEventListener('click', () => {
+
+    set_settings(settings_val);
+    
+    settings_box.style.visibility = "hidden";
+});
+inpt_weight.addEventListener('change', (e) => {
+    let w = inpt_weight.value;
+});
