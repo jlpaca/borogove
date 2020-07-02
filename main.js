@@ -74,7 +74,6 @@ function delete_char () {
 	prev = prev.slice(0, -1);
 	if (words.length
 	    && !split_ch.test(prev[prev.length-1])) {
-	    console.log('!');
 	    live = words[words.length - 1]; words.pop();
 	    prev = prev.slice(0, prev.length - live.length);
 	}
@@ -84,7 +83,6 @@ function delete_char () {
 function update_model () {
     wstop = Math.min(wstop, words.length);
     
-    console.log(wstop);
     let tail = words.slice(
 	Math.max(0, wstop - m_model.level),
 	words.length);

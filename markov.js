@@ -30,6 +30,18 @@ function make_markov (lvl) {
     return m;
 }
 
+
+function markov_normalise_node (n, weight) {
+    for (let k in n.next) {
+	markov_normalise_node(n.next[k], n.next[k].total / n.total * weight);
+    }
+    n.total = weight;
+}
+
+function markov_normalise (m) {
+    markov_normalise_node(m.tree, 1);
+}
+
 function markov_push (m, arr) {
     console.log("add to model: " + arr);
     for (let i = m.level; i < arr.length; ++i) {
