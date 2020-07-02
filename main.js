@@ -58,7 +58,7 @@ edit_box.addEventListener('keydown', e => {
 	e.preventDefault();
 
 	autowrite_reset();
-	refresh_view();
+	refresh_view(prev, live);
     }
 
 });
@@ -67,9 +67,9 @@ edit_box.addEventListener('focus', autowrite_enable);
 edit_box.addEventListener('blur',  autowrite_disable);
 
 
-function refresh_view () {
-    prev_text.innerHTML = prev;
-    live_text.innerHTML = live;
+function refresh_view (fst, snd) {
+    prev_text.innerHTML = fst;
+    live_text.innerHTML = snd;
 
     cursor.scrollIntoView({
 	block: 'nearest',
@@ -118,8 +118,8 @@ function update_model () {
 
 
 let autowrite_enabled = false;
-let autowrite_interval = 500;
-let autowrite_delay = 5000;
+let autowrite_interval = 400;
+let autowrite_delay = 2000;
 
 let autowrite_state = {
     start: 0,
@@ -189,18 +189,19 @@ function autowrite_start () {
     live = '';
 
     autowrite_state.writing = window.setInterval(() => {
-	word = markov_step(m_model, words);
+	word = markov_step(m_model, words) + ' ';
 
 	// cute little animation
 	let ch_interval = Math.min(80, autowrite_interval/word.length);
-
-	prev += ' ';
+	let temp = prev.slice();
 	for (let i = 0; i < word.length; ++i) {
-	    window.setTimeout(() => {
-		prev += word[i];
-		refresh_view();
+	    window.setTimeout(function () {
+		refresh_view(temp + word.slice(0, i + i), '');
 	    }, i * ch_interval);
 	}
+	
+	prev += word;
+	
     }, autowrite_interval);
 
     status_update('generative writing engaged');
@@ -210,6 +211,8 @@ function autowrite_stop () {
     if (autowrite_state.writing === null) return;
     window.clearInterval(autowrite_state.writing);
     autowrite_state.writing = null;
+    
+    refresh_view(prev, live);
 }
 
 let status_timer = null;
