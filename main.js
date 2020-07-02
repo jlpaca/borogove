@@ -33,7 +33,7 @@ let wstop = 0;  // index of first unprocessed word
 
 let m_model = make_markov(2);
 
-markov_push(m_model, corpus.toy);
+// markov_push(m_model, corpus.toy);
 
 edit_box.addEventListener('keydown', e => {
     let k = e.key.toUpperCase();
@@ -112,6 +112,8 @@ function update_model () {
 	wstop = words.length;
     }
 
+    let trunc = tail.slice(m_model.level).join(', ');
+    status_update('logged words: ' + trunc);
 }
 
 
@@ -126,7 +128,7 @@ let autowrite_state = {
 };
 
 function autowrite_enable () {
-    status_update('autowrite enabled.', true);
+    status_update('started writing.');
 
     progress.style.height = "0.5em";
 
@@ -137,7 +139,7 @@ function autowrite_enable () {
     autowrite_update();
 }
 function autowrite_disable () {
-    status_update('autowrite paused.');
+    status_update('paused.');
 
     autowrite_stop();
     progress.style.height = "0";
@@ -151,11 +153,13 @@ function autowrite_update () {
     // update the stopwatch & start writing if waited for long enough
     autowrite_state.elapsed = Date.now() - autowrite_state.start;
 
-    // percentage remaining until autowrite triggers
+    // percentage remaining until autowrite triggers.
     let percnt =
-	Math.max(0, (1 - autowrite_state.elapsed/autowrite_delay) * 100);
+	Math.max(0, (1 - autowrite_state.elapsed/autowrite_delay) * 110);
 
-    progress_fill.style.width = percnt + "%";
+    // extra ten percent buffer so bar doesn't flicker on the right
+    // when continuously typing.
+    progress_fill.style.width = Math.min(100, percnt * 1.1) + "%";
 
     if (!percnt) autowrite_start();
 
@@ -166,13 +170,22 @@ function autowrite_reset () {
     autowrite_stop();
     autowrite_state.start = Date.now();
     autowrite_state.elapsed = 0;
+    
+    status_update('writing...', true);
 }
 
 function autowrite_start () {
     // do nothing if already writing
     if (autowrite_state.writing !== null) return;
 
+    // add words to model
     update_model();
+
+    if (!m_model.tree.total) {
+	status_update('(insufficient sample size.)');
+	return;
+    }
+    
     live = '';
 
     autowrite_state.writing = window.setInterval(() => {
@@ -190,15 +203,13 @@ function autowrite_start () {
 	}
     }, autowrite_interval);
 
-    status_update('autowrite engaged...');
+    status_update('generative writing engaged');
 }
 
 function autowrite_stop () {
     if (autowrite_state.writing === null) return;
     window.clearInterval(autowrite_state.writing);
     autowrite_state.writing = null;
-
-    status_update('');
 }
 
 let status_timer = null;
@@ -210,6 +221,6 @@ function status_update (msg, trs) {
     status.innerHTML = msg;
     if (trs) status_timer = window.setTimeout(() => {
 	status_update("", false);
-    }, 2000);
+    }, 3000);
 
 }

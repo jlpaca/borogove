@@ -4,15 +4,21 @@
     <meta charset="utf-8">
     <title>borogove</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway&family=Zilla+Slab:wght@400;700&display=swap">
     <script src="markov.js"></script>
   </head>
   <body>
-    <div class="header"><div class="header-content">borogove &middot; settings &middot; about</div></div>
+    <div class="header">
+      <div class="header-content">
+	settings &middot;
+	<a href="https://github.com/jlpaca/borogove">about</a>
+      </div>
+    </div>
     <div id="edit-box" tabindex="0">
       <div class="edit-content"><span class="prev-text"></span><span class="live-text"></span><span class="cursor">_</span><div class="scroll-stop"></div></div>
     </div>
     <div class="footer">
-      <div class="status">no status message.</div>
+      <div class="status">(waiting...)</div>
       <div class="progress"></div>
     </div>
     <script src="main.js"></script>
