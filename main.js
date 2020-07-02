@@ -33,7 +33,14 @@ let wstop = 0;  // index of first unprocessed word
 
 let m_model = make_markov(2);
 
-// markov_push(m_model, corpus.toy);
+function build_model(lvl, arr, wght) {
+    let m = make_markov(lvl);
+    markov_push(m, arr);
+    if (wght) {
+	markov_normalise(m, wght);
+    }
+    return m;
+}
 
 edit_box.addEventListener('keydown', e => {
     let k = e.key.toUpperCase();
@@ -120,7 +127,6 @@ function update_model () {
     }
 
     let trunc = tail.slice(m_model.level).join(', ');
-    status_update('logged words: ' + trunc);
 }
 
 
@@ -275,8 +281,11 @@ function get_settings (v) {
 }
 function set_settings (v) {
     set_opt_value('corpus', v.corpus);
+    settings_val.corpus = v.corpus;
     set_opt_value('depth',  v.depth);
+    settings_val.depth  = v.depth;
     set_num_value('weight', v.weight);
+    settings_val.weight = v.weight;
 }
 function validate_settings (v) {
     if (['alice', 'kjb', 'dante'].indexOf(v.corpus) < 0) return false;
@@ -286,23 +295,56 @@ function validate_settings (v) {
     return true;
 }
 
+function fetch_corpus (name) {
+    console.log('fetch text corpus ' + name + '.json');
+    let url = 'http://localhost:8000/corpus/' + name + '.json';
+    return res = fetch(url).then((res) => { return res.json(); });
+}
+
 document.getElementById('nav-settings').addEventListener('click', () => {
     settings_box.focus();
     settings_box.style.visibility = "visible";
 });
 
 document.getElementById('settings-done').addEventListener('click', () => {
-    // if all the settings are valid, generate a new model.
     let v = get_settings();
     if (validate_settings(v)) {
+	// if all the settings are valid, try to generate a new model.
+	// a lot of this is done asynchronously but, like, we're also
+	// not doing anything else in the meantime.
+	let corpus = [];
+	if (v.weight > 0) {
+	    corpus = fetch_corpus(v.corpus);
+	} else {
+	    console.log('toy corpus.');
+	    corpus = new Promise(function (res, rej) {
+		res(['\nTHIS', 'IS', 'A', 'CAT.',
+		     '\nTHIS', 'IS', 'A', 'BAT.']);
+	    });
+	    v.weight = 8;
+	}
+	corpus.then((json) => {
+	    console.log('building model from corpus...');
+	    return new Promise (function (res, rej) {
+		m = build_model(v.depth, json, v.weight);
+		res(m);
+	    });
+	}).then((m) => {
+	    console.log('done.');
 
-	set_settings(v);
+	    m_model = m;
+	    
+	    wstop = 0; update_model();
+	    // ugly global-variable hack; eat everything that's been
+	    // written from the beginning again.
+	    
+	    
+	    set_settings(v); //console.log(v);
+	    settings_box.style.visibility = "hidden";
+	});
 	
-	console.log(settings_val);
-	
-	settings_box.style.visibility = "hidden";
     } else {
-	console.log(v);
+	console.log('settings invalid: ', v);
     }
 });
 document.getElementById('settings-cancel').addEventListener('click', () => {

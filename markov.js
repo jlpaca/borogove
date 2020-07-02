@@ -38,12 +38,16 @@ function markov_normalise_node (n, weight) {
     n.total = weight;
 }
 
-function markov_normalise (m) {
-    markov_normalise_node(m.tree, 1);
+function markov_normalise (m, weight) {
+    if (!m.tree.total) {
+	// cannot normalise a tree with no nodes
+	return m;
+    }
+    markov_normalise_node(m.tree, parseInt(weight));
 }
 
 function markov_push (m, arr) {
-    console.log("add to model: " + arr);
+    // console.log("add to model: " + arr);
     for (let i = m.level; i < arr.length; ++i) {
 	let node = m.tree;
 	let w;
