@@ -49,6 +49,19 @@ a:active {
     vertical-align: middle;
 }
 
+/* info panel */
+#about-box {
+    position: fixed;
+    top: 2em;
+    bottom: 2em;
+
+    width: 100%;
+    padding: 1em;
+
+    background-color: inherit;
+    visibility: hidden;
+}
+
 /* settings panel */
 #settings-box {
     position: fixed;

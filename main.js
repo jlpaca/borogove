@@ -195,7 +195,7 @@ function autowrite_start () {
     update_model();
 
     if (!m_model.tree.total) {
-	status_update('(insufficient sample size.)');
+	status_update('insufficient sample size.');
 	return;
     }
     
@@ -243,6 +243,7 @@ function status_update (msg, trs) {
 
 // awful, awful user interface code.
 const settings_box = document.getElementById("settings-box");
+const about_box = document.getElementById("about-box");
 const inpt_weight  = document.getElementById("weight");
 
 const settings_val = {
@@ -287,27 +288,7 @@ function set_settings (v) {
     set_num_value('weight', v.weight);
     settings_val.weight = v.weight;
 }
-function validate_settings (v) {
-    if (['alice', 'kjb', 'dante'].indexOf(v.corpus) < 0) return false;
-    if (["0", "1", "2"].indexOf(v.depth) < 0) return false;
-    if (!inpt_weight.validity.valid) return false;
-    // not sure about support on the validity API.
-    return true;
-}
-
-function fetch_corpus (name) {
-    console.log('fetch text corpus ' + name + '.json');
-    let url = 'http://localhost:8000/corpus/' + name + '.json';
-    return res = fetch(url).then((res) => { return res.json(); });
-}
-
-document.getElementById('nav-settings').addEventListener('click', () => {
-    settings_box.focus();
-    settings_box.style.visibility = "visible";
-});
-
-document.getElementById('settings-done').addEventListener('click', () => {
-    let v = get_settings();
+function commit_settings (v) {
     if (validate_settings(v)) {
 	// if all the settings are valid, try to generate a new model.
 	// a lot of this is done asynchronously but, like, we're also
@@ -333,19 +314,63 @@ document.getElementById('settings-done').addEventListener('click', () => {
 	    console.log('done.');
 
 	    m_model = m;
-	    
-	    wstop = 0; update_model();
-	    // ugly global-variable hack; eat everything that's been
+
+    	    // ugly global-variable hack; eat everything that's been
 	    // written from the beginning again.
-	    
-	    
-	    set_settings(v); //console.log(v);
-	    settings_box.style.visibility = "hidden";
+	    wstop = 0; update_model();
+
+	    // if everything worked, update the restore settings.
+	    set_settings(v);
 	});
-	
     } else {
-	console.log('settings invalid: ', v);
+	console.log('!invalid settings', v);
     }
+}
+function validate_settings (v) {
+    if (['alice', 'kjb', 'dante'].indexOf(v.corpus) < 0) return false;
+    if (["0", "1", "2"].indexOf(v.depth) < 0) return false;
+    if (!inpt_weight.validity.valid) return false;
+    // not sure about support on the validity API.
+    return true;
+}
+// hard-coded navigation; if we ever need more than three pages then
+// refactor this to toggling through an array maybe.
+document.getElementById('nav-settings').addEventListener('click', (e) => {
+    e.stopPropagation();
+    show_settings_box();
+});
+document.getElementById('nav-about').addEventListener('click', (e) => {
+    e.stopPropagation();
+    show_about_box();
+});
+
+function show_settings_box () {
+    fold_about_box();
+    settings_box.style.visibility = "visible";
+}
+function fold_settings_box () {
+    // restore settings and fold the box;
+    set_settings(settings_val);
+    settings_box.style.visibility = "hidden";
+}
+
+function show_about_box () {
+    fold_settings_box();
+    about_box.style.visibility = "visible";
+}
+function fold_about_box () { about_box.style.visibility = "hidden"; }
+
+
+function fetch_corpus (name) {
+    console.log('fetch text corpus ' + name + '.json');
+    let url = 'http://localhost:8000/corpus/' + name + '.json';
+    return res = fetch(url).then((res) => { return res.json(); });
+}
+
+document.getElementById('settings-done').addEventListener('click', () => {
+    let v = get_settings();
+    commit_settings(v);
+    fold_settings_box();
 });
 document.getElementById('settings-cancel').addEventListener('click', () => {
 
@@ -353,6 +378,13 @@ document.getElementById('settings-cancel').addEventListener('click', () => {
     
     settings_box.style.visibility = "hidden";
 });
+
 inpt_weight.addEventListener('change', (e) => {
     let w = inpt_weight.value;
 });
+document.getElementsByClassName('header')[0].addEventListener('click', () => {
+    fold_settings_box();
+    fold_about_box();
+});
+
+
