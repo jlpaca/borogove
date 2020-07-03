@@ -3,79 +3,35 @@
   <head>
     <meta charset="utf-8">
     <title>borogove</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway&family=Zilla+Slab:wght@400;700&display=swap">
     <script src="markov.js"></script>
+    <style>
+      .edit-box {
+	  min-width: 100px;
+	  min-height: 1em;
+	  border: 1px solid #000;
+      }
+      .edit-box:focus {
+	  border: 1px solid #f00;
+      }
+      .edit-box > .prev {
+	  background-color: #aaa;
+      }
+      .edit-box > .live {
+	  background-color: #afa;
+      }
+      .edit-box > .curs {
+
+      }
+      </style>
+    <script src="engine.js"></script>
   </head>
   <body>
-    <div class="header">
-      <div class="header-content">
-	<a href="#" id="nav-settings">settings</a>
-	&middot;
-	<a href="#" id="nav-about">about</a>
-      </div>
-    </div>
-    <div id="edit-box" tabindex="0">
-      <div class="edit-content"><span class="prev-text"></span><span class="live-text"></span><span class="cursor">_</span><div class="scroll-stop"></div></div>
-    </div>
-    <div id="about-box">
-      what is a borogove?
-    </div>
-    <div id="settings-box">
-      <form onsubmit="return false;">
-	<!-- base corpus -->
-	<div class="settings-row">
-	  <div class="settings-label">base corpus:</div>
-	  <div class="option">
-	    <input type="radio" name="corpus" value="alice" id="corpus-alice" required checked>
-	    <label for="corpus-alice">Alice's Adventures in Wonderland</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="corpus" value="kjb" id="corpus-kjb" required>
-	    <label for="corpus-kjb">King James Bible</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="corpus" value="dante" id="corpus-dante" required>
-	    <label for="corpus-dante">The Divine Comedy</label>
-	  </div>
-	</div>
-	<!-- inference depth -->
-	<div class="settings-row">
-	  <div class="settings-label">inference depth:</div>
-	  <div class="option">
-	    <input type="radio" name="depth" value="0" id="depth-0" required>
-	    <label for="depth-0">0</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="depth" value="1" id="depth-1" required checked>
-	    <label for="depth-1">1</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="depth" value="2" id="depth-2" required>
-	    <label for="depth-2">2</label>
-	  </div>
-	</div>
-	<!-- corpus weight -->
-	<div class="settings-row">
-	  <div class="settings-label">
-	    <label for="weight">corpus weight:</label>
-	  </div>
-	  <div class="number">
-	    <input type="number" name="weight" id="weight" min="0" value="32" required>
-	  </div>
-	</div>
-	<!-- submit button -->
-	<div class="settings-row">
-	  <input type="button" id="settings-done" value="done">
-	  <input type="button" id="settings-cancel" value="cancel">
-	</div>
-      </form>
-    </div>
-</div>
-<div class="footer">
-  <div class="status">waiting...</div>
-  <div class="progress"></div>
-</div>
-<script src="main.js"></script>
-</body>
+    <div id="edit-box-a" class="edit-box" tabindex="0"></div>
+    <div id="edit-box-b" class="edit-box" tabindex="0"></div>
+    <script>
+      const A = make_engine(document.getElementById("edit-box-a"));
+      const B = make_engine(document.getElementById("edit-box-b"));
+    </script>
+  </body>
 </html>
