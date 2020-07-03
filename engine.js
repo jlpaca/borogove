@@ -85,6 +85,8 @@ const make_engine = (function () {
 		let w = markov_next(m, s.words);
 
 		if (w !== null) {
+		    // treat beginning of file as special case.
+		    if (s.prev === '') w = '\n' + w.slice(1);
 		    s.words.push(w);
 		    s.prev += w;
 		} else {
