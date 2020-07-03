@@ -6,7 +6,7 @@ const make_engine = (function () {
 
 	e.dom    = make_engine_dom(el);
 	e.state  = make_engine_state();
-	e.markov = make_markov();  // generative model
+	e.markov = make_markov(2);  // generative model
 
 
 	//e.elem.addEventListener('focus', autowrite_enable);
@@ -33,6 +33,7 @@ const make_engine = (function () {
 	
 	const el_curs = document.createElement('span');
 	el_curs.className = 'curs';
+	el_curs.textContent = '_';
 	el_edit.appendChild(el_curs);   
 	
 	return {
@@ -46,8 +47,8 @@ const make_engine = (function () {
 
     function make_engine_state () {
 	return 	{
-	    prev: '', // text already processed
-	    live: '', // text to be processed on next update
+	    prev:  '', // text already processed
+	    live:  '\n', // next word, including last delimiter
 	    words: [],
 	    wstop: 0
 	};
@@ -57,40 +58,29 @@ const make_engine = (function () {
 	Object.create(null),
 	{
 	    valid_re: /^[ -~]$/,
-	    split_ch: ' ',
-
 	    insert_char: function (ch) {
 		let s = this.state;
 		
-		if (ch === ' ') {
-		    if (s.live.length) s.words.push(s.live);
-		    s.prev += s.live + ch;
+		if (ch === ' ' || ch === '\n') {
+		    if (s.live.length > 1) s.words.push(s.live);
+		    s.prev += s.live;
 		    s.live = '';
-		} else {
-		    // this is a trick (TM) : every line has a trailing space
-		    // appended to it so that when we split the line at spaces we
-		    // remember the beginning of lines. delete_char treats this
-		    // special case by removing two characters instead of one
-		    // whenever backspacing into a newline.		
-
-		    s.live += (ch === '\n' ? ' \n' : ch);
 		}
+		s.live += ch;
 	    },
 
 	    delete_char: function (ch) {
 		let s = this.state;
 		
-		if (s.live.length) {
+		if (s.live.length > 1) {
 		    s.live = s.live.slice(0, -1);
 		} else {
-		    let deleted_ch = s.prev[s.prev.length - 1];
-		    
-		    // check for the newline trick
-		    s.prev = s.prev.slice(0, deleted_ch === '\n' ? -2 : -1);
-
-		    // check if we've backspaced into a previous word
-		    let preceding_ch = s.prev[s.prev.length - 1];
-		    if (s.words.length && (preceding_ch !== ' ')) {
+		    let pred_ch = s.prev[s.prev.length - 1] || '\n';
+		    if (pred_ch === ' ' || pred_ch === '\n') {
+			s.live = pred_ch;
+			s.prev = s.prev.slice(0, -1);
+		    } else {
+			console.assert(s.words.length > 0);
 			s.live = s.words.pop();
 			s.wstop = Math.min(s.wstop, s.words.length);
 			s.prev = s.prev.slice(0, s.prev.length - s.live.length);
@@ -102,26 +92,38 @@ const make_engine = (function () {
 		let s = this.state;
 		let m = this.markov;
 
-		console.log('index of first unprocessed word: ' + s.wstop);
-		
-		let tail = s.words.slice(Math.max(0, s.wstop - m.level));
-		s.wstop += markov_push(m, tail);
+		// markov_push helpfully returns the index of the
+		// first unprocessed word.
+		s.wstop = markov_push(m, s.words, s.wstop);
 	    },
 
 	    generate_word: function () {
 		let s = this.state;
 		let m = this.markov;
 		
-		let w = markov_step(m, s.words);
-		s.prev += w + ' ';
+		let w = markov_next(m, s.words);
+		
+		if (w !== null) {
+		    s.words.push(w);
+		    s.prev += w;
+		} else {
+		    console.log('! insufficient data.');
+		}
 	    },
 	    
 	    refresh_view: function (fst, snd) {
 		let s = this.state;
 		let d = this.dom;
-		
-		fst = fst || s.prev;
-		snd = snd || s.live;
+
+		if (fst === undefined) {
+		    fst = (s.prev[0] === '\n')
+			? s.prev.slice(1)
+			: s.prev;
+		    snd = (s.prev === '' && s.live[0] === '\n')
+			? s.live.slice(1)
+			: s.live;
+		}
+		else if (snd === undefined) snd = '';
 
 		d.prev.textContent = fst;
 		d.live.textContent = snd;

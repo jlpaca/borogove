@@ -36,9 +36,11 @@ function markov_normalise (m, weight) {
     markov_normalise_node(m.tree, parseInt(weight));
 }
 
-function markov_push (m, arr) {
-    let i = m.level;
-    for (; i < arr.length; ++i) {
+function markov_push (m, arr, start) {
+    start = Math.max(m.level, start || m.level);
+
+    let i;
+    for (i = start; i < arr.length; ++i) {
 	let node = m.tree;
 	let w;
 
@@ -49,8 +51,8 @@ function markov_push (m, arr) {
 	}
 	++node.total;
     }
-    console.log('pushed ' + (i - m.level) + ' words from ', arr);
-    return i - m.level;
+    console.log('pushed ' + (i - start) + ' words from index ' + start + ' of ' , arr);
+    return start + i - start
 }
 
 function markov_select (leaf) {
@@ -59,9 +61,10 @@ function markov_select (leaf) {
     for (let w in leaf.next) {
 	if ((s += leaf.next[w].total) > r) { return w; }
     }
+    return null;
 }
 
-function markov_step (m, tail, depth) {
+function markov_next (m, tail, depth) {
     let len = tail.length;
     if (depth === undefined) { depth = m.level; }
     depth = Math.min(depth, len);
@@ -77,7 +80,5 @@ function markov_step (m, tail, depth) {
 	node = node.next[w];
     }
 
-    let word = markov_select(node);
-    tail.push(word);
-    return word;
+    return markov_select(node);
 }
