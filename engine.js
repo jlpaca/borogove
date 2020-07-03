@@ -71,11 +71,11 @@ const make_engine = (function () {
 		let s = this.state;
 
 		// throws away the model and builds a new one;
-		// also updates it with all the words we remember.
 		this.markov = make_markov(depth, corpus, weight);
 
+		// also updates it with all the words we remember on
+		// the next opportunity.
 		s.wstop = 0;
-		this.update_markov();
 	    },
 
 	    generate_word: function () {
@@ -164,9 +164,8 @@ const make_engine = (function () {
 
 		if (action_flag) {
 		    ev.preventDefault();
-
+		    this.dom.edit.dispatchEvent(new Event('edit-action'));
 		    this.update_dom();
-		    // autowrite_reset();
 		}
 
 	    }
