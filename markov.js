@@ -75,7 +75,7 @@ function markov_next (m, tail, depth) {
 	w = tail[j];
 	if (!node.next[w]) {
 	    /* if terminated; try with shorter inference */
-	    return markov_step(m, tail, depth-1);
+	    return markov_next(m, tail, depth-1);
 	}
 	node = node.next[w];
     }

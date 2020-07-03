@@ -1,66 +1,44 @@
 const make_engine = (function () {
-    
-    function make_engine (el) {
 
+    function make_engine (args) {
 	const e = Object.create(engine_prototype);
 
-	e.dom    = make_engine_dom(el);
-	e.state  = make_engine_state();
-	e.markov = make_markov(2);  // generative model
+	args = args || {};
+	args.element = args.element || document.createElement('div');
+	args.model  = args.model  || {
+	    depth: 1,
+	    // stupid default toy corpus
+	    corpus: [ "\nTHIS", " IS", " A", " CAT.",
+		      "\nTHIS", " IS", " A", " BAT.",
+		      "\nTHIS", " IS", " NOT", " A", " RAT." ],
+	    weight: 32
+	};
 
+	e.reset_state();
+	e.reset_markov(args.model.depth,
+		       args.model.corpus,
+		       args.model.weight);
+	e.reset_dom(args.element);
 
-	//e.elem.addEventListener('focus', autowrite_enable);
-	//e.elem.addEventListener('blur', autowrite_disable);
-	const el_cursor = document.createElement('cursor');
-
-	
-	e.dom.edit.addEventListener('keydown', e.handle_keydown.bind(e));
-	
 	return e;
     }
-    
-    function make_engine_dom (el) {
-	const el_edit = el || document.createElement('div');
-	while (el.hasChildNodes()) el.removeChild(el.lastChild);
 
-	const el_prev = document.createElement('span');
-	el_prev.className = 'prev';
-	el_edit.appendChild(el_prev);
-	
-	const el_live = document.createElement('span');
-	el_live.className = 'live';
-	el_edit.appendChild(el_live);
-	
-	const el_curs = document.createElement('span');
-	el_curs.className = 'curs';
-	el_curs.textContent = '_';
-	el_edit.appendChild(el_curs);   
-	
-	return {
-	    edit: el_edit,
-	    prev: el_prev,
-	    live: el_live,
-	    curs: el_curs
-	};
-	
-    };
-
-    function make_engine_state () {
-	return 	{
-	    prev:  '', // text already processed
-	    live:  '\n', // next word, including last delimiter
-	    words: [],
-	    wstop: 0
-	};
-    };
-    
     const engine_prototype = Object.assign(
 	Object.create(null),
 	{
 	    valid_re: /^[ -~]$/,
+	    reset_state: function () {
+		this.state = {
+		    prev:  '', // text already processed
+		    live:  '\n', // next word, including last delimiter
+		    words: [],
+		    wstop: 0
+		};
+	    },
+
 	    insert_char: function (ch) {
 		let s = this.state;
-		
+
 		if (ch === ' ' || ch === '\n') {
 		    if (s.live.length > 1) s.words.push(s.live);
 		    s.prev += s.live;
@@ -71,7 +49,7 @@ const make_engine = (function () {
 
 	    delete_char: function (ch) {
 		let s = this.state;
-		
+
 		if (s.live.length > 1) {
 		    s.live = s.live.slice(0, -1);
 		} else {
@@ -97,12 +75,23 @@ const make_engine = (function () {
 		s.wstop = markov_push(m, s.words, s.wstop);
 	    },
 
+	    reset_markov: function (depth, corpus, weight) {
+		let s = this.state;
+
+		// throws away the model and builds a new one;
+		// also updates it with all the words we remember.
+		this.markov = make_markov(depth, corpus, weight);
+
+		s.wstop = 0;
+		this.update_markov();
+	    },
+
 	    generate_word: function () {
 		let s = this.state;
 		let m = this.markov;
-		
+
 		let w = markov_next(m, s.words);
-		
+
 		if (w !== null) {
 		    s.words.push(w);
 		    s.prev += w;
@@ -110,11 +99,41 @@ const make_engine = (function () {
 		    console.log('! insufficient data.');
 		}
 	    },
-	    
-	    refresh_view: function (fst, snd) {
+
+	    reset_dom: function (el) {
+		el = el || document.createElement('div');
+		while (el.hasChildNodes()) el.removeChild(el.lastChild);
+
+		const el_prev = document.createElement('span');
+		el_prev.className = 'prev';
+		el.appendChild(el_prev);
+
+		const el_live = document.createElement('span');
+		el_live.className = 'live';
+		el.appendChild(el_live);
+
+		const el_curs = document.createElement('span');
+		el_curs.className = 'curs';
+		el_curs.textContent = '_';
+		el.appendChild(el_curs);
+
+		el.addEventListener('keydown', this.handle_keydown.bind(this));
+
+		this.dom = {
+		    edit: el,
+		    prev: el_prev,
+		    live: el_live,
+		    curs: el_curs
+		};
+	    },
+
+	    update_dom: function (fst, snd) {
 		let s = this.state;
 		let d = this.dom;
 
+		// optionally supply both fst and snd to override
+		// default display of internal state; good for
+		// animation and stuff.
 		if (fst === undefined) {
 		    fst = (s.prev[0] === '\n')
 			? s.prev.slice(1)
@@ -131,11 +150,10 @@ const make_engine = (function () {
 		    block: 'nearest',
 		    behavior: 'smooth'
 		});
-		
+
 	    },
 
 	    handle_keydown: function (ev) {
-		
 		let k = ev.key.toUpperCase();
 
 		let action_flag = true;
@@ -155,7 +173,7 @@ const make_engine = (function () {
 		if (action_flag) {
 		    ev.preventDefault();
 
-		    this.refresh_view();
+		    this.update_dom();
 		    // autowrite_reset();
 		}
 
@@ -165,5 +183,5 @@ const make_engine = (function () {
     );
 
     return make_engine;
-    
+
 })();
