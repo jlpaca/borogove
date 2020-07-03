@@ -5,14 +5,7 @@ const make_engine = (function () {
 
 	args = args || {};
 	args.element = args.element || document.createElement('div');
-	args.model  = args.model  || {
-	    depth: 1,
-	    // stupid default toy corpus
-	    corpus: [ "\nTHIS", " IS", " A", " CAT.",
-		      "\nTHIS", " IS", " A", " BAT.",
-		      "\nTHIS", " IS", " NOT", " A", " RAT." ],
-	    weight: 32
-	};
+	args.model  = args.model || { depth: 1, corpus: [], weight: 0 };
 
 	e.reset_state();
 	e.reset_markov(args.model.depth,

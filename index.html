@@ -55,27 +55,32 @@
 	    <div class="settings-item-head">text corpus</div>
 	    <div class="settings-item-body options-group">
 	      <div class="option">
-		<input type="radio" name="opt-corpus" id="opt-corpus-alice" value="alice" disabled checked>
+		<input type="radio" name="opt-corpus" id="opt-corpus-none" value="none" checked>
+		<label for="opt-corpus-none">none</label>
+	      </div>
+	      <div class="option">
+		<input type="radio" name="opt-corpus" id="opt-corpus-alice" value="alice" required>
 		<label for="opt-corpus-alice">Alice's Adventures in Wonderland</label>
 	      </div>
 	      <div class="option">
-		<input type="radio" name="opt-corpus" id="opt-corpus-kjb" value="kjb" disabled required>
+		<input type="radio" name="opt-corpus" id="opt-corpus-kjb" value="kjb">
 		<label for="opt-corpus-kjb">King James Bible</label>
 	      </div>
 	      <div class="option">
-		<input type="radio" name="opt-corpus" id="opt-corpus-dante" value="dante" disabled>
+		<input type="radio" name="opt-corpus" id="opt-corpus-dante" value="dante">
 		<label for="opt-corpus-dante">The Divine Comedy</label>
 	      </div>
 	      <div class="option">
-		<input type="radio" name="opt-corpus" id="opt-corpus-upload" value="upload" disabled>
+		<input type="radio" name="opt-corpus" id="opt-corpus-upload" value="upload">
 		<label for="opt-corpus-upload">upload file</label>
+		<input type="file" name="file-text" id="file-text" disabled>
 	      </div>
 	    </div>
 	  </div>
-	  <!-- text file upload -->
-	  <div class="settings-item" id="settings-item-file-text" style="visibility: hidden;">
-	    <div class="settings-item-head"><label for="file-text">text file:</label></div>
-	    <div class="settings-item-body"><input type="file" name="file-text" id="file-text" disabled></div>
+	  <!-- corpus weight -->
+	  <div class="settings-item">
+	    <div class="settings-item-head"><label for="num-weight">corpus weight</label></div>
+	    <div class="settings-item-body"><input type="number" name="num-weight" id="num-weight" value="0" min="0" disabled></div>
 	  </div>
 	  <!-- inference depth -->
 	  <div class="settings-item">
@@ -94,11 +99,6 @@
 		<label for="opt-depth-2">2</label>
 	      </div>
 	    </div>
-	  </div>
-	  <!-- corpus weight -->
-	  <div class="settings-item">
-	    <div class="settings-item-head"><label for="num-weight">corpus weight</label></div>
-	    <div class="settings-item-body"><input type="number" name="num-weight" id="num-weight" value="0" min="0"></div>
 	  </div>
 	</div>
 	<div class="settings-group" id="settings-group-generate">
@@ -121,9 +121,14 @@
     </div>
 </div>
 
-<div id="edit-box-a" class="edit-box" tabindex="0"></div>
+<div id="edit-box" class="edit-box" tabindex="0"></div>
 <script>
-  const A = make_engine({ element: document.getElementById("edit-box-a") });
+  const imp = Object.create(null);
+
+  function imp_init () {
+      imp.engine = make_engine({ element: document.getElementById('edit-box') });
+  }
+  imp_init();
 </script>
 </body>
 </html>
