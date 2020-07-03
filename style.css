@@ -1,0 +1,52 @@
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+body {
+    box-sizing: border-box;
+
+    margin: 0;
+    padding: 0;
+
+    position: relative;
+    width: 100%;
+    height: 100vh;
+
+    font-family: 'Zilla Slab', sans-serif;
+}
+
+nav {
+    background-color: #ff0;
+    line-height: 2em;
+}
+.box-nav {
+    display: inline-block;
+    vertical-align: middle;
+}
+.box-parent {
+    display: inline-block;
+    background-color: #0f0;
+}
+/* a trick (TM) for css-only tabs */
+.box {
+    background-color: #f00;
+    position: absolute;
+    right: 0;
+    visibility: hidden;
+
+    top: 2em;
+    bottom: 2em;
+    left: 0;
+    right: 0;
+
+    line-height: 1.2em;
+}
+
+.box-parent:focus-within > .box {
+    visibility: visible;
+}
+
+#edit-box {
+    visibility: visible;
+    padding: 1em;
+    white-space: pre-wrap;
+}
