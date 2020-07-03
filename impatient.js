@@ -1,12 +1,15 @@
 (function () {
+
+    // look, gordon, a pun!
+
     let imp_engine = null;
     let imp_dom = Object.create(null);
 
     let imp_start_ms = Date.now();
     let imp_elaps_ms = 0;
 
-    let imp_delay_ms = 1000;
-    let imp_interval_ms = 300;
+    let imp_delay_ms = undefined;
+    let imp_interval_ms = undefined;
 
     let imp_enabled = false;
     let imp_writing = null;
@@ -25,6 +28,9 @@
     function imp_writing_start () {
 	// "the imp is writing..."
 	if  (imp_writing === null) {
+
+	    imp_engine.update_markov();
+
 	    imp_writing = window.setInterval(() => {
 		imp_engine.generate_word();
 		imp_engine.update_dom();
@@ -171,6 +177,10 @@
 
 	imp_dom.depth_grp.addEventListener('input', imp_set_depth);
 
+	// sync the dom settings & interals.
+	imp_set_freq();
+	imp_set_delay();
+	imp_set_depth();
     }
 
     document.addEventListener('DOMContentLoaded', imp_init);

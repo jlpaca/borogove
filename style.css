@@ -12,11 +12,13 @@ body {
     height: 100vh;
 
     font-family: 'Zilla Slab', sans-serif;
+
+    color: #333;
 }
 
 nav {
-    background-color: #ff0;
     line-height: 2em;
+    padding: 0 1em;
 }
 .box-nav {
     display: inline-block;
@@ -24,11 +26,10 @@ nav {
 }
 .box-parent {
     display: inline-block;
-    background-color: #0f0;
 }
 /* a trick (TM) for css-only tabs */
 .box {
-    background-color: #f00;
+    background-color: #fafafa;
     position: absolute;
     right: 0;
     visibility: hidden;
@@ -49,4 +50,9 @@ nav {
     visibility: visible;
     padding: 1em;
     white-space: pre-wrap;
+
+    color: #999;
+}
+#edit-box:focus {
+    color: #111;
 }
