@@ -6,11 +6,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway&family=Zilla+Slab:wght@400;700&display=swap">
     <script src="markov.js"></script>
     <style>
+      *, *:before, *:after {
+	  box-sizing: inherit;
+      }
+      body {
+	  box-sizing: border-box;
+      }
+
       .edit-box {
 	  min-width: 100px;
 	  min-height: 1em;
 	  border: 1px solid #000;
-
 	  white-space: pre-wrap;
       }
       .edit-box:focus {
@@ -25,15 +31,99 @@
       .edit-box > .curs {
 
       }
-      </style>
+      .settings-group {
+	  margin: 1em;
+	  border: 2px solid #666;
+      }
+      .settings-item {
+	  margin: 0.5em;
+	  border: 1px solid #444;
+      }
+      label  {
+	  text-align: middle;
+      }
+    </style>
     <script src="engine.js"></script>
+    <script src="settings.js"></script>
   </head>
   <body>
-    <div id="edit-box-a" class="edit-box" tabindex="0"></div>
-    <div id="edit-box-b" class="edit-box" tabindex="0"></div>
-    <script>
-      const A = make_engine({ element: document.getElementById("edit-box-a") });
-      const B = make_engine({ element: document.getElementById("edit-box-b") });
-    </script>
-  </body>
+    <div id="settings-box">
+      <form id="settings-form" action="" onsubmit="return false;">
+	<div class="settings-group" id="settings-group-corpus">
+	  <!-- text corpus -->
+	  <div class="settings-item">
+	    <div class="settings-item-head">text corpus</div>
+	    <div class="settings-item-body options-group">
+	      <div class="option">
+		<input type="radio" name="opt-corpus" id="opt-corpus-alice" value="alice" disabled checked>
+		<label for="opt-corpus-alice">Alice's Adventures in Wonderland</label>
+	      </div>
+	      <div class="option">
+		<input type="radio" name="opt-corpus" id="opt-corpus-kjb" value="kjb" disabled required>
+		<label for="opt-corpus-kjb">King James Bible</label>
+	      </div>
+	      <div class="option">
+		<input type="radio" name="opt-corpus" id="opt-corpus-dante" value="dante" disabled>
+		<label for="opt-corpus-dante">The Divine Comedy</label>
+	      </div>
+	      <div class="option">
+		<input type="radio" name="opt-corpus" id="opt-corpus-upload" value="upload" disabled>
+		<label for="opt-corpus-upload">upload file</label>
+	      </div>
+	    </div>
+	  </div>
+	  <!-- text file upload -->
+	  <div class="settings-item" id="settings-item-file-text" style="visibility: hidden;">
+	    <div class="settings-item-head"><label for="file-text">text file:</label></div>
+	    <div class="settings-item-body"><input type="file" name="file-text" id="file-text" disabled></div>
+	  </div>
+	  <!-- inference depth -->
+	  <div class="settings-item">
+	    <div class="settings-item-head">inference depth</div>
+	    <div class="settings-item-body options-group">
+	      <div class="option">
+		<input type="radio" name="opt-depth" id="opt-depth-0" value="0" required>
+		<label for="opt-depth-0">0</label>
+	      </div>
+	      <div class="option">
+		<input type="radio" name="opt-depth" id="opt-depth-1" value="1" checked>
+		<label for="opt-depth-1">1</label>
+	      </div>
+	      <div class="option">
+		<input type="radio" name="opt-depth" id="opt-depth-2" value="2">
+		<label for="opt-depth-2">2</label>
+	      </div>
+	    </div>
+	  </div>
+	  <!-- corpus weight -->
+	  <div class="settings-item">
+	    <div class="settings-item-head"><label for="num-weight">corpus weight</label></div>
+	    <div class="settings-item-body"><input type="number" name="num-weight" id="num-weight" value="0" min="0"></div>
+	  </div>
+	</div>
+	<div class="settings-group" id="settings-group-generate">
+	  <!-- delay -->
+	  <div class="settings-item">
+	    <div class="settings-item-head"><label for="rng-delay">delay</label></div>
+	    <div class="settings-item-body"><input type="range" name="rng-delay" id="rng-delay" min="0" max="1" step="0.05" value="0.2"></div>
+	  </div>
+	  <!-- frequency -->
+	  <div class="settings-item">
+	    <div class="settings-item-head"><label for="rng-freq">frequency</label></div>
+	    <div class="settings-item-body"><input type="range" name="rng-freq" id="rng-freq" min="0" max="1" step="0.05" value="0.4"></div>
+	  </div>
+	</div>
+
+	<!-- submit / cancel -->
+	<input type="button" value="save">
+	<input type="button" value="cancel">
+      </form>
+    </div>
+</div>
+
+<div id="edit-box-a" class="edit-box" tabindex="0"></div>
+<script>
+  const A = make_engine({ element: document.getElementById("edit-box-a") });
+</script>
+</body>
 </html>

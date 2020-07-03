@@ -58,7 +58,6 @@ const make_engine = (function () {
 			s.live = pred_ch;
 			s.prev = s.prev.slice(0, -1);
 		    } else {
-			console.assert(s.words.length > 0);
 			s.live = s.words.pop();
 			s.wstop = Math.min(s.wstop, s.words.length);
 			s.prev = s.prev.slice(0, s.prev.length - s.live.length);
