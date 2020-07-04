@@ -86,7 +86,7 @@ const make_engine = (function () {
 
 		if (w !== null) {
 		    // treat beginning of file as special case.
-		    if (s.prev === '') w = '\n' + w.slice(1);
+		    if (!s.words.length) w = '\n' + w.slice(1);
 		    s.words.push(w);
 		    s.prev += w;
 		    return w;
@@ -131,15 +131,11 @@ const make_engine = (function () {
 		// optionally supply both fst and snd to override
 		// default display of internal state; good for
 		// animation and stuff.
-		if (fst === undefined) {
-		    fst = (s.prev[0] === '\n')
-			? s.prev.slice(1)
-			: s.prev;
-		    snd = (s.prev === '' && s.live[0] === '\n')
-			? s.live.slice(1)
-			: s.live;
-		}
-		else if (snd === undefined) snd = '';
+		if (fst === undefined) fst = s.prev;
+		if (snd === undefined) snd = s.live;
+
+		if (fst[0] === '\n') fst = fst.slice(1);
+		if (fst === '' && snd[0] === '\n') snd = snd.slice(1);
 
 		d.prev.textContent = fst;
 		d.live.textContent = snd;

@@ -14,6 +14,8 @@
     let imp_enabled = false;
     let imp_writing = null;
 
+    let imp_writing_prev = '';
+
     function imp_msg (arg) {
 	// dispatch an event to trigger the status message handler.
 	document.dispatchEvent(new CustomEvent('status-msg', { detail: arg }));
@@ -34,14 +36,32 @@
 	imp_msg({ text: 'paused', state: 'disabled', temp: 1 });
     }
 
+    function imp_anim_ch (prev, tail, ms) {
+	if  (imp_writing === null || !tail.length) return;
+
+	prev += tail[0];
+	imp_engine.update_dom(prev, '');
+
+	window.setTimeout(() => imp_anim_ch(prev, tail.slice(1), ms), ms);
+    }
+
     function imp_write_word () {
 	let w = imp_engine.generate_word();
 
-	if (w === null) imp_msg({ text: 'insufficient data', state: 'warning', temp: 1 });
-	else            imp_msg({ text: 'generative writing engaged (' + w.slice(1) + ')',
-				  state: 'engaged' });
+	if (w === null) {
+	    imp_msg({ text: 'insufficient data', state: 'warning', temp: 1 });
+	    return;
+	}
 
-	imp_engine.update_dom();
+	imp_msg({ text: 'generative writing engaged (' + w.slice(1) + ')', state: 'engaged' });
+
+	// cute little animation:
+	let ch_interval = Math.min(0.9, 1/(1+w.length)) * imp_interval_ms;
+	imp_anim_ch(imp_writing_prev.slice(), w, ch_interval);
+
+	imp_writing_prev += w;
+
+	//imp_engine.update_dom(imp_writing_prev, '');
     }
 
     function imp_writing_start () {
@@ -49,8 +69,13 @@
 	if  (imp_writing === null) {
 	    imp_engine.update_markov();
 
-	    imp_write_word(); // call by hand the first time without delay.
+	    imp_writing_prev = imp_engine.state.prev;
+
 	    imp_writing = window.setInterval(imp_write_word, imp_interval_ms);
+	    imp_write_word();
+	    // call by hand the first time without delay. it's
+	    // slightly awful that this has to be after setting the
+	    // interval, since imp_anim_ch checks for the state of imp_writing.
 	}
     }
     function imp_writing_stop () {

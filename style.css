@@ -67,6 +67,9 @@ a:hover  { color: #ccc; }
 #edit:focus {
     color: #111;
 }
+#edit > .live {
+    background-color: #ddd;
+}
 /* extra margin for comfy scrolling */
 #edit > .curs::after {
     content: '';
