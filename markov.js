@@ -1,21 +1,3 @@
-/* some generic code for building markov chains & generating text. */
-let corpus = {
-    alice: [],
-    kjb: [],
-    dante: [],
-};
-/*
-  for (let k in corpus) {
-  fetch('http://localhost:8000/corpus/' + k + '.json')
-  .then(resp => resp.json())
-  .then(json => { corpus[k] = json; });	    
-  }
-*/
-corpus.toy = [
-    "THIS", "IS", "A", "CAT.",
-    "THIS", "IS", "NOT", "A", "BAT."
-];
-
 function make_leaf () {
     let el = Object.create(null);
     el.total = 0;
@@ -23,10 +5,18 @@ function make_leaf () {
     return el;
 }
 
-function make_markov (lvl) {
+function make_markov (lvl, arr, wght) {
+
+    if (lvl === undefined) lvl = 1;
+    if (!Array.isArray(arr)) arr = [];
+    
     let m = Object.create(null);
     m.level = lvl;
     m.tree = make_leaf();
+
+    markov_push(m, arr);
+    if (wght) markov_normalise(m, wght);
+    
     return m;
 }
 
@@ -46,9 +36,11 @@ function markov_normalise (m, weight) {
     markov_normalise_node(m.tree, parseInt(weight));
 }
 
-function markov_push (m, arr) {
-    // console.log("add to model: " + arr);
-    for (let i = m.level; i < arr.length; ++i) {
+function markov_push (m, arr, start) {
+    start = Math.max(m.level, start || m.level);
+
+    let i;
+    for (i = start; i < arr.length; ++i) {
 	let node = m.tree;
 	let w;
 
@@ -59,7 +51,8 @@ function markov_push (m, arr) {
 	}
 	++node.total;
     }
-    return m;
+    console.log('pushed ' + (i - start) + ' words from index ' + start + ' of ' , arr);
+    return start + i - start
 }
 
 function markov_select (leaf) {
@@ -68,9 +61,10 @@ function markov_select (leaf) {
     for (let w in leaf.next) {
 	if ((s += leaf.next[w].total) > r) { return w; }
     }
+    return null;
 }
 
-function markov_step (m, tail, depth) {
+function markov_next (m, tail, depth) {
     let len = tail.length;
     if (depth === undefined) { depth = m.level; }
     depth = Math.min(depth, len);
@@ -81,12 +75,10 @@ function markov_step (m, tail, depth) {
 	w = tail[j];
 	if (!node.next[w]) {
 	    /* if terminated; try with shorter inference */
-	    return markov_step(m, tail, depth-1);
+	    return markov_next(m, tail, depth-1);
 	}
 	node = node.next[w];
     }
 
-    let word = markov_select(node);
-    tail.push(word);
-    return word;
+    return markov_select(node);
 }

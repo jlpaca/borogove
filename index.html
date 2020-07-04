@@ -3,76 +3,104 @@
   <head>
     <meta charset="utf-8">
     <title>borogove</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway&family=Zilla+Slab:wght@400;700&display=swap">
     <script src="markov.js"></script>
+    <script src="engine.js"></script>
+    <script src="impatient.js"></script>
+    <script src="status.js"></script>
   </head>
   <body>
-    <div class="header">
-      <div class="header-content">
-	<a href="#" id="nav-settings">settings</a>
-	&middot;
-	<a href="https://github.com/jlpaca/borogove" id="nav-about">about</a>
+    <nav>
+      <a href="#">edit</a><a href="#settings">options</a><a href="#about">about</a>
+    </nav>
+    <main>
+      <!-- EDIT -->
+      <div id="edit" class="box" tabindex="0"></div>
+
+      <!-- OPTIONS -->
+      <div id="settings" class="box" tabindex="0">
+	<form id="settings-form" action="" onsubmit="return false;">
+	  <div class="settings-group">
+	    <!-- text corpus -->
+	    <h3>import text corpus</h3>
+	    <div class="settings-item" title="import words from literature or arbitrary text files.">
+	      <div class="settings-item-head">source</div>
+	      <div class="settings-item-body options-group" id="opt-corpus-group">
+		<div class="option">
+		  <input type="radio" name="opt-corpus" id="opt-corpus-alice" value="alice" required checked>
+		  <label for="opt-corpus-alice">Alice's Adventures in Wonderland</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-corpus" id="opt-corpus-kjb" value="kjb">
+		  <label for="opt-corpus-kjb">King James Bible</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-corpus" id="opt-corpus-dante" value="dante">
+		  <label for="opt-corpus-dante">The Divine Comedy</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-corpus" id="opt-corpus-upload" value="upload">
+		  <label for="opt-corpus-upload">upload file:</label>
+		  <input type="file" name="file-upload" id="file-upload" disabled>
+		</div>
+	      </div>
+	    </div>
+	    <!-- corpus weight -->
+	    <div class="settings-item" title="weight: influence of imported words on modelled probabilities.">
+	      <div class="settings-item-head"><label for="num-weight">weight</label></div>
+	      <div class="settings-item-body"><input type="number" name="num-weight" id="num-weight" value="240" min="1"></div>
+	    </div>
+	    <input type="button" id="btn-import" value="import">
+	  </div>
+	  <div class="settings-group">
+	    <h3>generative text</h3>
+	    <!-- inference depth -->
+	    <div class="settings-item" title="inference depth: number of preceding words influencing the probability of the next word. changing the inference depth discards all imported corpora and rebuilds the model.">
+	      <div class="settings-item-head">inference depth</div>
+	      <div class="settings-item-body options-group" id="opt-depth-group">
+		<div class="option">
+		  <input type="radio" name="opt-depth" id="opt-depth-0" value="0" required>
+		  <label for="opt-depth-0">0</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-depth" id="opt-depth-1" value="1" checked>
+		  <label for="opt-depth-1">1</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-depth" id="opt-depth-2" value="2">
+		  <label for="opt-depth-2">2</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-depth" id="opt-depth-3" value="3">
+		  <label for="opt-depth-3">3</label>
+		</div>
+	      </div>
+	    </div>
+	    <!-- delay -->
+	    <div class="settings-item" title="delay: amount of time to wait before beginning to generate text.">
+	      <div class="settings-item-head"><label for="rng-delay">delay</label></div>
+	      <div class="settings-item-body"><input type="range" name="rng-delay" id="rng-delay" min="0" max="1" step="0.05" value="0.6"></div>
+	    </div>
+	    <!-- frequency -->
+	    <div class="settings-item" title="frequency: rate at which subsequent words are generated once generative text is engaged.">
+	      <div class="settings-item-head"><label for="rng-freq">frequency</label></div>
+	      <div class="settings-item-body"><input type="range" name="rng-freq" id="rng-freq" min="0" max="1" step="0.05" value="0.6"></div>
+	    </div>
+	  </div>
+	</form>
       </div>
-    </div>
-    <div id="edit-box" tabindex="0">
-      <div class="edit-content"><span class="prev-text"></span><span class="live-text"></span><span class="cursor">_</span><div class="scroll-stop"></div></div>
-    </div>
-    <div id="settings-box">
-      <form onsubmit="return false;">
-	<!-- base corpus -->
-	<div class="settings-row">
-	  <div class="settings-label">base corpus:</div>
-	  <div class="option">
-	    <input type="radio" name="corpus" value="alice" id="corpus-alice" required checked>
-	    <label for="corpus-alice">Alice's Adventures in Wonderland</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="corpus" value="kjb" id="corpus-kjb" required>
-	    <label for="corpus-kjb">King James Bible</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="corpus" value="dante" id="corpus-dante" required>
-	    <label for="corpus-dante">The Divine Comedy</label>
-	  </div>
-	</div>
-	<!-- inference depth -->
-	<div class="settings-row">
-	  <div class="settings-label">inference depth:</div>
-	  <div class="option">
-	    <input type="radio" name="depth" value="0" id="depth-0" required>
-	    <label for="depth-0">0</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="depth" value="1" id="depth-1" required checked>
-	    <label for="depth-1">1</label>
-	  </div>
-	  <div class="option">
-	    <input type="radio" name="depth" value="2" id="depth-2" required>
-	    <label for="depth-2">2</label>
-	  </div>
-	</div>
-	<!-- corpus weight -->
-	<div class="settings-row">
-	  <div class="settings-label">
-	    <label for="weight">corpus weight:</label>
-	  </div>
-	  <div class="number">
-	    <input type="number" name="weight" id="weight" min="0" value="32" required>
-	  </div>
-	</div>
-	<!-- submit button -->
-	<div class="settings-row">
-	<input type="button" id="settings-done" value="done">
-	<input type="button" id="settings-cancel" value="cancel">
-	</div>
-      </form>
-    </div>
-</div>
-<div class="footer">
-  <div class="status">(waiting...)</div>
-  <div class="progress"></div>
-</div>
-<script src="main.js"></script>
-</body>
+      <!-- ABOUT -->
+      <div id="about" class="box" tabindex="0">
+	what is a borogove?
+      </div>
+    </main>
+
+    <footer id="status-msg">
+      <div class="status-msg-content">
+	<div id="status-msg-text"></div>
+	<div id="status-msg-progress"><div class="status-msg-fill"></div></div>
+      </div>
+    </footer>
+  </body>
 </html>
