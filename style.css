@@ -11,7 +11,8 @@ body {
     width: 100%;
     min-width: 300px;
     height: 100vh;
-
+    overflow: hidden;
+    
     font-family: 'Zilla Slab', sans-serif;
 
     color: #333;
@@ -40,11 +41,13 @@ a:hover  { color: #ccc; }
     visibility: hidden;
 
     top: 2em;
-    bottom: 0;
+    bottom: 2em;
     left: 0;
     right: 0;
 
-    padding: 1em 1em 3em 1em;
+    overflow: auto;
+    
+    padding: 1em;
 
     line-height: 1.2em;
 
@@ -56,16 +59,20 @@ a:hover  { color: #ccc; }
 }
 
 #edit {
-    visibility: visible;
     white-space: pre-wrap;
-
+    
     color: #999;
     background-color: #f6f6f6;
 }
 #edit:focus {
     color: #111;
 }
-
+/* extra margin for comfy scrolling */
+#edit > .curs::after {
+    content: '';
+    display: block;
+    height: 60%;
+}
 h3 {
     margin: 0;
 }

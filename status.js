@@ -34,6 +34,17 @@
 	if (arg.temp > 0) msg_reset_timer = window.setTimeout(() => msg_set(msg_cache), 1000*arg.temp);
     }
 
+    // some extra convenience / interface quality-of-life quote
+    // bundled in here: aways display a valid tab. also for extra
+    // prettiness, make the background of the status bar agree
+    // with the currently displayed tab.
+    function hashtab () {
+	if (['#edit', '#options', '#about'].indexOf(window.location.hash) < 0)
+	    window.location.hash = '#edit';
+	msg_dom.elem.style.backgroundColor = (window.location.hash === '#edit') ? '#f6f6f6' : '#fff';
+    }
+
+    
     function msg_init () {
 	msg_dom.elem = document.getElementById('status-msg');
 	msg_dom.text = document.getElementById('status-msg-text');
@@ -47,6 +58,10 @@
 
 	    msg_set(arg);
 	});
+
+	hashtab();
+	window.addEventListener('hashchange', hashtab);
+
     }
 
     document.addEventListener('DOMContentLoaded', msg_init);
