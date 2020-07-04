@@ -7,7 +7,7 @@ my $fst = 1;
 while (<>) {
     my $br = 1;
 
-    s/-+/ --- /g; # normalise em-dashes
+    s/-+-+/ --- /g; # normalise em-dashes
     tr/'"`/'''/;  # normalise quotation marks
     s/[^a-zA-z0-9-.:;,!?' ]//g; # strip all other characters
 
