@@ -99,7 +99,8 @@
 
 	// update the status bar.
 	let percnt = Math.max(0, 1 - imp_elaps_ms/imp_delay_ms);
-	imp_msg({ fill: percnt });
+	imp_msg({ fill: Math.min(1, 1.1 * percnt) });
+	// small delay before bar starts decrementing
 
 	window.requestAnimationFrame(imp_tick);
 
