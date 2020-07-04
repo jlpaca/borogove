@@ -9,6 +9,7 @@ body {
 
     position: relative;
     width: 100%;
+    min-width: 300px;
     height: 100vh;
 
     font-family: 'Zilla Slab', sans-serif;
@@ -17,13 +18,17 @@ body {
     background-color: #fff;
 }
 
-nav {
-    line-height: 2em;
+.nav {
+    height: 2em;
+    display: table;
 }
-.box-nav {
-    display: inline-block;
+.box-parent {
+    display: table-cell;
+    height: 100%;
     vertical-align: middle;
-    margin-left: 2ex;
+}
+a.box-nav {
+    padding-left: 1em;
 }
 a.box-nav:link {
     color: #666;
@@ -36,9 +41,6 @@ a.box-nav:visited {
 a.box-nav:hover {
     color: #ccc;
 }
-.box-parent {
-    display: inline-block;
-}
 /* a trick (TM) for css-only tabs */
 .box {
     position: absolute;
@@ -49,6 +51,8 @@ a.box-nav:hover {
     bottom: 0;
     left: 0;
     right: 0;
+
+    padding: 1em 1em 3em 1em;
 
     line-height: 1.2em;
 
@@ -61,11 +65,10 @@ a.box-nav:hover {
 
 #edit-box {
     visibility: visible;
-    padding: 1em 1em 3em 1em;
     white-space: pre-wrap;
 
     color: #999;
-    background-color: #fafafa;
+    background-color: #f6f6f6;
 }
 #edit-box:focus {
     color: #111;

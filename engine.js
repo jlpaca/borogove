@@ -112,6 +112,9 @@ const make_engine = (function () {
 		el.appendChild(el_curs);
 
 		el.addEventListener('keydown', this.handle_keydown.bind(this));
+		el.addEventListener('mousedown', () => {
+		    el.dispatchEvent(new Event('edit-action'));
+		});
 
 		this.dom = {
 		    edit: el,

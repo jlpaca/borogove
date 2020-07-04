@@ -152,7 +152,7 @@
 		return;
 	    }
 	} else {
-   	    // freeze the import button until we are done.
+	    // freeze the import button until we are done.
 	    imp_msg({ text: 'loading text corpus from server...', state: 'warning' });
 	    imp_freeze_corpus_btn(true);
 

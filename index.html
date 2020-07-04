@@ -11,15 +11,11 @@
     <script src="status.js"></script> 
   </head>
   <body>
-    <div>
+    <div class="nav">
       <!-- EDIT -->
       <div id="edit-box-parent" class="box-parent"><a href="#" class="box-nav" id="edit-box-nav">edit</a>
 	<div id="edit-box" class="box" tabindex="0"></div>
       </div>
-      <script>
-	document.getElementById('edit-box-nav').addEventListener(
-	    'focus', () => document.getElementById('edit-box').focus());
-      </script>
       <!-- OPTIONS -->
       <div id="settings-box-parent" class="box-parent"><a href="#" class="box-nav">options</a>
 	<div id="settings-box" class="box" tabindex="0">
@@ -105,5 +101,10 @@
       <div id="status-msg-progress"><div class="status-msg-fill"></div></div>
       </div>
     </div>
+    <script>
+      // special cast: automatically transfer focus to edit box if navigated to that page.
+      document.getElementById('edit-box-nav').addEventListener(
+	  'focus', () => document.getElementById('edit-box').focus());
+    </script>
   </body>
 </html>
