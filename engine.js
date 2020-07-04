@@ -89,9 +89,9 @@ const make_engine = (function () {
 		    if (s.prev === '') w = '\n' + w.slice(1);
 		    s.words.push(w);
 		    s.prev += w;
-		} else {
-		    console.log('! insufficient data.');
+		    return w;
 		}
+		return null;
 	    },
 
 	    reset_dom: function (el) {

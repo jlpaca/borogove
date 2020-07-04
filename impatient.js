@@ -14,27 +14,42 @@
     let imp_enabled = false;
     let imp_writing = null;
 
+    function imp_msg (arg) {
+	// dispatch an event to trigger the status message handler.
+	document.dispatchEvent(new CustomEvent('status-msg', { detail: arg }));
+    }
+
     function imp_enable () {
 	imp_enabled = true;
 	imp_start_ms = Date.now() - imp_elaps_ms;
 	imp_tick();
+
+	imp_msg({ text: 'start writing',state: 'enabled' });
     }
 
     function  imp_disable () {
 	imp_writing_stop();
 	imp_enabled = false;
+
+	imp_msg({ text: 'paused', state: 'disabled' });
+    }
+
+    function imp_write_word () {
+	let w = imp_engine.generate_word();
+
+	console.log(w === null)
+	if (w === null) imp_msg({ text: 'insufficient data', state: 'warning' });
+	else            imp_msg({ text: 'generative writing engaged (' + w.slice(1) + ')',
+				  state: 'engaged' });
+
+	imp_engine.update_dom();
     }
 
     function imp_writing_start () {
 	// "the imp is writing..."
 	if  (imp_writing === null) {
-
 	    imp_engine.update_markov();
-
-	    imp_writing = window.setInterval(() => {
-		imp_engine.generate_word();
-		imp_engine.update_dom();
-	    }, imp_interval_ms);
+	    imp_writing = window.setInterval(imp_write_word, imp_interval_ms);
 	}
     }
     function imp_writing_stop () {
@@ -45,6 +60,8 @@
     function imp_interrupt() {
 	if (imp_writing) imp_writing_stop();
 	imp_start_ms = Date.now();
+
+	imp_msg({ text: 'writing...', state: 'enabled' });
     }
 
     function imp_tick () {
@@ -53,6 +70,10 @@
 	imp_elaps_ms = Date.now() - imp_start_ms;
 
 	if (imp_elaps_ms > imp_delay_ms) imp_writing_start();
+
+	// update the status bar.
+	let percnt = Math.max(0, 1 - imp_elaps_ms/imp_delay_ms);
+	imp_msg({ fill: percnt });
 
 	window.requestAnimationFrame(imp_tick);
 
@@ -106,29 +127,40 @@
 	return arr;
     }
 
+    function imp_freeze_corpus_btn (freeze) {
+	imp_dom.corpus_btn.disabled = freeze;
+	imp_dom.corpus_btn.value = freeze ? 'working...' : 'import';
+    }
     function imp_set_corpus () {
 
 	let v = opt_get(imp_dom.corpus);
 	let w = parseInt(imp_dom.weight.value);
 
 	let ret;
+
 	if (v === 'upload') {
 	    // read & process uplaoded file.
 	    if (imp_dom.upload.files.length) {
+		// freeze the import button until we are done.
+		imp_msg({ text: 'loadading text corpus from file...',state: 'warning' });
+		imp_freeze_corpus_btn(true);
+
 		ret = get_corpus_from_file(imp_dom.upload.files[0]);
 	    } else {
 		imp_dom.upload.setCustomValidity('Please select a text file to be uploaded.');
 		return;
 	    }
 	} else {
+   	    // freeze the import button until we are done.
+	    imp_msg({ text: 'loadading text corpus from server...',state: 'warning' });
+	    imp_freeze_corpus_btn(true);
+
 	    // fetch corpus json
 	    let url = 'http://localhost:8000/corpus/' +  v + '.json';
 	    ret = get_corpus_from_url(url);
 	}
 	ret.then(
 	    arr => {
-		console.log(arr.length - imp_engine.markov.level);
-		console.log(imp_engine.markov.tree.total);
 		let m = imp_engine.markov;
 		let len_import = arr.length - m.level;
 		let len_present = m.tree.total;
@@ -137,10 +169,16 @@
 		    markov_normalise(m, len_import/w*len_present);
 		}
 		markov_push(m, arr);
-		console.log('w: ', w + len_present);
 		markov_normalise(m, w + len_present);
+
+		// unfreeze the import button
+		imp_msg({ text: 'text corpus imported',state: 'engaged' });
+		imp_freeze_corpus_btn(false);
 	    },
-	    err => console.log('Encountered error while loading text corpus.'));
+	    err => {
+		imp_msg({ text: 'error loading text corpus', state: 'error' });
+		imp_freeze_corpus_btn(false);
+	    });
 
     }
 

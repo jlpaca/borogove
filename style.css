@@ -14,22 +14,33 @@ body {
     font-family: 'Zilla Slab', sans-serif;
 
     color: #333;
+    background-color: #fff;
 }
 
 nav {
     line-height: 2em;
-    padding: 0 1em;
 }
 .box-nav {
     display: inline-block;
     vertical-align: middle;
+    margin-left: 2ex;
+}
+a.box-nav:link {
+    color: #666;
+    text-decoration: none;
+    transition: color .1s;
+}
+a.box-nav:visited {
+    color: #666;
+}
+a.box-nav:hover {
+    color: #ccc;
 }
 .box-parent {
     display: inline-block;
 }
 /* a trick (TM) for css-only tabs */
 .box {
-    background-color: #fafafa;
     position: absolute;
     right: 0;
     visibility: hidden;
@@ -40,6 +51,8 @@ nav {
     right: 0;
 
     line-height: 1.2em;
+
+    background-color: #fff;
 }
 
 .box-parent:focus-within > .box {
@@ -52,7 +65,49 @@ nav {
     white-space: pre-wrap;
 
     color: #999;
+    background-color: #fafafa;
 }
 #edit-box:focus {
     color: #111;
 }
+
+#status-msg {
+    position: absolute;
+    bottom: 0;
+    height: 2em;
+    width: 100%;
+
+    display: table;
+    text-align: center;
+    
+    background-color: #fafafa;
+}
+#status-msg > .status-msg-content {
+    display: table-cell;
+    vertical-align: bottom;
+}
+#status-msg-progress {
+    height: 0.5em;
+    transition: height .2s;
+}
+#status-msg-progress > div {
+    height: 100%;
+}
+.status-msg-default  .status-msg-fill { background-color: #999; }
+.status-msg-default  #status-msg-text {            color: #777; }
+
+.status-msg-enabled  .status-msg-fill { background-color: #999; }
+.status-msg-enabled  #status-msg-text {            color: #777; }
+
+.status-msg-engaged  .status-msg-fill { background-color: #7f7; }
+.status-msg-engaged  #status-msg-text {            color: #3a3; }
+
+.status-msg-disabled .status-msg-fill { background-color: #ddd; }
+.status-msg-disabled #status-msg-text {            color: #aaa; }
+.status-msg-disabled #status-msg-progress { height: 0; }
+
+.status-msg-error    .status-msg-fill { background-color: #f77; }
+.status-msg-error    #status-msg-text {            color: #c55; }
+
+.status-msg-warning  .status-msg-fill { background-color: #fc0; }
+.status-msg-warning  #status-msg-text {            color: #d90; }
