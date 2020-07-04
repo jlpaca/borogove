@@ -24,21 +24,20 @@
 	imp_start_ms = Date.now() - imp_elaps_ms;
 	imp_tick();
 
-	imp_msg({ text: 'start writing',state: 'enabled' });
+	imp_msg({ text: 'start writing', state: 'enabled' });
     }
 
     function  imp_disable () {
 	imp_writing_stop();
 	imp_enabled = false;
 
-	imp_msg({ text: 'paused', state: 'disabled' });
+	imp_msg({ text: 'paused', state: 'disabled', temp: 1 });
     }
 
     function imp_write_word () {
 	let w = imp_engine.generate_word();
 
-	console.log(w === null)
-	if (w === null) imp_msg({ text: 'insufficient data', state: 'warning' });
+	if (w === null) imp_msg({ text: 'insufficient data', state: 'warning', temp: 1 });
 	else            imp_msg({ text: 'generative writing engaged (' + w.slice(1) + ')',
 				  state: 'engaged' });
 
@@ -49,6 +48,8 @@
 	// "the imp is writing..."
 	if  (imp_writing === null) {
 	    imp_engine.update_markov();
+
+	    imp_write_word(); // call by hand the first time without delay.
 	    imp_writing = window.setInterval(imp_write_word, imp_interval_ms);
 	}
     }
@@ -142,7 +143,7 @@
 	    // read & process uplaoded file.
 	    if (imp_dom.upload.files.length) {
 		// freeze the import button until we are done.
-		imp_msg({ text: 'loadading text corpus from file...',state: 'warning' });
+		imp_msg({ text: 'loading text corpus from file...', state: 'warning' });
 		imp_freeze_corpus_btn(true);
 
 		ret = get_corpus_from_file(imp_dom.upload.files[0]);
@@ -152,7 +153,7 @@
 	    }
 	} else {
    	    // freeze the import button until we are done.
-	    imp_msg({ text: 'loadading text corpus from server...',state: 'warning' });
+	    imp_msg({ text: 'loading text corpus from server...', state: 'warning' });
 	    imp_freeze_corpus_btn(true);
 
 	    // fetch corpus json
@@ -172,11 +173,11 @@
 		markov_normalise(m, w + len_present);
 
 		// unfreeze the import button
-		imp_msg({ text: 'text corpus imported',state: 'engaged' });
+		imp_msg({ text: 'text corpus imported', state: 'engaged', temp: 1 });
 		imp_freeze_corpus_btn(false);
 	    },
 	    err => {
-		imp_msg({ text: 'error loading text corpus', state: 'error' });
+		imp_msg({ text: 'error loading text corpus', state: 'error', temp: 1 });
 		imp_freeze_corpus_btn(false);
 	    });
 

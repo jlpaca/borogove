@@ -46,7 +46,7 @@ a.box-nav:hover {
     visibility: hidden;
 
     top: 2em;
-    bottom: 2em;
+    bottom: 0;
     left: 0;
     right: 0;
 
@@ -61,7 +61,7 @@ a.box-nav:hover {
 
 #edit-box {
     visibility: visible;
-    padding: 1em;
+    padding: 1em 1em 3em 1em;
     white-space: pre-wrap;
 
     color: #999;
@@ -79,8 +79,6 @@ a.box-nav:hover {
 
     display: table;
     text-align: center;
-    
-    background-color: #fafafa;
 }
 #status-msg > .status-msg-content {
     display: table-cell;
@@ -88,7 +86,6 @@ a.box-nav:hover {
 }
 #status-msg-progress {
     height: 0.5em;
-    transition: height .2s;
 }
 #status-msg-progress > div {
     height: 100%;
@@ -104,7 +101,6 @@ a.box-nav:hover {
 
 .status-msg-disabled .status-msg-fill { background-color: #ddd; }
 .status-msg-disabled #status-msg-text {            color: #aaa; }
-.status-msg-disabled #status-msg-progress { height: 0; }
 
 .status-msg-error    .status-msg-fill { background-color: #f77; }
 .status-msg-error    #status-msg-text {            color: #c55; }
