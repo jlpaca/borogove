@@ -18,29 +18,21 @@ body {
     background-color: #fff;
 }
 
-.nav {
+nav {
     height: 2em;
-    display: table;
+    line-height: 2em;
 }
-.box-parent {
-    display: table-cell;
-    height: 100%;
-    vertical-align: middle;
+nav > a {
+    display: inline-block;
+    margin-left: 1em;
 }
-a.box-nav {
-    padding-left: 1em;
-}
-a.box-nav:link {
+a:link {
     color: #666;
     text-decoration: none;
     transition: color .1s;
 }
-a.box-nav:visited {
-    color: #666;
-}
-a.box-nav:hover {
-    color: #ccc;
-}
+a:visited { color: #666; }
+a:hover  { color: #ccc; }
 /* a trick (TM) for css-only tabs */
 .box {
     position: absolute;
@@ -59,21 +51,40 @@ a.box-nav:hover {
     background-color: #fff;
 }
 
-.box-parent:focus-within > .box {
+.box:target {
     visibility: visible;
 }
 
-#edit-box {
+#edit {
     visibility: visible;
     white-space: pre-wrap;
 
     color: #999;
     background-color: #f6f6f6;
 }
-#edit-box:focus {
+#edit:focus {
     color: #111;
 }
 
+h3 {
+    margin: 0;
+}
+
+.settings-group {
+    vertical-align: top;
+    display: inline-block;
+    padding-bottom: 1em;
+}
+.settings-item-head {
+    margin-bottom: 0.5em;
+    text-decoration: underline;
+}
+.settings-item-desc {
+    font-size: small;
+}
+.settings-item {
+    margin: 1em 0;
+}
 #status-msg {
     position: absolute;
     bottom: 0;

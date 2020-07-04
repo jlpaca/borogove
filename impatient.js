@@ -184,7 +184,7 @@
     }
 
     function imp_init () {
-	imp_engine = make_engine({ element: document.getElementById('edit-box') });
+	imp_engine = make_engine({ element: document.getElementById('edit') });
 
 	// awful, awful user interface code:
 
