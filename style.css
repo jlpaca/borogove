@@ -19,6 +19,23 @@ body {
     background-color: #fff;
 }
 
+.boxquote {
+    font-style: italic;
+    margin: 2em 0;
+}
+.boxquote > .quote-txt {
+    text-align: center;
+    font-size: large;
+    margin-bottom: 0.5em;
+}
+.boxquote > .quote-src { text-align: right; }
+
+hr {
+    height: 0;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
 nav {
     height: 2em;
     line-height: 2em;
@@ -29,9 +46,10 @@ nav > a {
 }
 a:link {
     color: #666;
-    text-decoration: none;
     transition: color .1s;
 }
+nav,h1 > a:link { text-decoration: none; }
+h1 > a:link { color: inherit; }
 a:visited { color: #666; }
 a:hover  { color: #ccc; }
 /* a trick (TM) for css-only tabs */
@@ -80,6 +98,10 @@ h3 {
     margin: 0;
 }
 
+.box-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
 .settings-group {
     vertical-align: top;
     display: inline-block;
@@ -95,6 +117,7 @@ h3 {
 .settings-item {
     margin: 1em 0;
 }
+
 #status-msg {
     position: absolute;
     bottom: 0;

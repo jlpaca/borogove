@@ -20,7 +20,7 @@
 
       <!-- OPTIONS -->
       <div id="options" class="box" tabindex="0">
-	<form id="settings-form" action="" onsubmit="return false;">
+	<form id="settings-form" class="box-content" action="" onsubmit="return false;">
 	  <div class="settings-group">
 	    <!-- text corpus -->
 	    <h3>import text corpus</h3>
@@ -38,6 +38,10 @@
 		<div class="option">
 		  <input type="radio" name="opt-corpus" id="opt-corpus-dante" value="dante">
 		  <label for="opt-corpus-dante">The Divine Comedy</label>
+		</div>
+		<div class="option">
+		  <input type="radio" name="opt-corpus" id="opt-corpus-meditations" value="meditations">
+		  <label for="opt-corpus-meditations">Meditations</label>
 		</div>
 		<div class="option">
 		  <input type="radio" name="opt-corpus" id="opt-corpus-upload" value="upload">
@@ -64,11 +68,11 @@
 		  <label for="opt-depth-0">0</label>
 		</div>
 		<div class="option">
-		  <input type="radio" name="opt-depth" id="opt-depth-1" value="1" checked>
+		  <input type="radio" name="opt-depth" id="opt-depth-1" value="1">
 		  <label for="opt-depth-1">1</label>
 		</div>
 		<div class="option">
-		  <input type="radio" name="opt-depth" id="opt-depth-2" value="2">
+		  <input type="radio" name="opt-depth" id="opt-depth-2" value="2" checked>
 		  <label for="opt-depth-2">2</label>
 		</div>
 		<div class="option">
@@ -92,7 +96,12 @@
       </div>
       <!-- ABOUT -->
       <div id="about" class="box" tabindex="0">
-	what is a borogove?
+	<div class="box-content">
+	  <p><b>Borogove</b> is an impatient free-writing scratchpad: write, or the Markov chain starts writing for you.</p>
+	  <p><a href="about.html">more</a></p>
+	  <hr>
+	  <p>Made by <a href="https://jlpaca.github.io">Jean Lo</a>. July 2020</p>
+	</div>
       </div>
     </main>
     <footer id="status-msg">

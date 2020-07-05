@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>borogove: about</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="box-content">
+      <h1><a href="index.html">borogove</a></h1>
+      <div class="boxquote">
+	<div class="quote-txt">Alice was beginning to write out a history of all flesh,</div>
+	<div class="quote-src">&mdash; <a href="https://eblong.com/zarf/markov/">The Revelation of St Alice</a></div>
+      </div>
+
+      <p>
+	"Don't stop writing", says the person instructing the
+	<a href="https://en.wikipedia.org/wiki/Free_writing">writing
+	exercise</a>, "Don't worry about spelling or grammar or
+	coherence. Don't go back and edit. It's okay if it's
+	gibberish, or if it's same three words over and over. The
+	important thing is that you never lift your pen from the
+	paper."
+      </p>
+
+      <p>
+	Easier said than done, of course: the three-minute timer
+	starts and your brain betrays you by going completely blank.
+      </p>
+      
+      <p>
+	<a href="index.html">Borogove</a> is a scratchpad that solves
+	this problem by being impatient: if you hesistate for too
+	long, it starts writing <i>for you</i>. It does this by
+	choosing the next word based on the last few words you've
+	written down. This model of generative text exhibits all the
+	important features, such as mostly outputting gibberish, and
+	sometimes getting stuck in a loop repeating the same three
+	words.
+      </p>
+
+      <p>
+	Since it is difficult to construct a predictive model of your
+	writing based only on what you've written within the span of a
+	few minutes, an option is included to tell the model to
+	pretend that you are
+	<a href="https://www.gutenberg.org/files/10900/10900-h/10900-h.htm">Lewis Carroll</a>,
+	<a href="https://www.gutenberg.org/files/8800/8800-h/8800-h.htm">Dante Alighieri</a>,
+	<a href="https://www.gutenberg.org/files/2680/2680-h/2680-h.htm">Marcus Aurelius Antoninus</a>,
+	or
+	<a href="https://www.gutenberg.org/files/10900/10900-h/10900-h.htm">The
+	  Church of England</a>.
+      </p>
+
+      <p>
+	(Also, text corpora imports <i>stack</i>: imported text is
+	added to the model alongside any previous imports, together
+	with everything that's been written in the editor. Importing
+	several things in sequence potentially creates an unholy
+	amalgamation of writing styles.)
+      </p>
+
+      <p>
+	The scratchpad only handles appending or deleting one
+	character at a time, is case-insensitive, and confines itself
+	to the tragically Anglocentric character set that is printable
+	ASCII. I could attempt to justify this by saying something
+	about how the absence of limitations is the enemy of art, but
+	it is really because implementing a text editor is
+	hard.
+      </p>
+      
+      <hr>
+      <p><a href="https://jlpaca.github.io">Jean Lo</a>, July 2020</p>
+    </div>
+  </body>
+</html>
