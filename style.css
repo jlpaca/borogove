@@ -12,7 +12,7 @@ body {
     min-width: 300px;
     height: 100vh;
     overflow: hidden;
-    
+
     font-family: 'Zilla Slab', sans-serif;
 
     color: #333;
@@ -64,7 +64,7 @@ a:hover  { color: #ccc; }
     right: 0;
 
     overflow: auto;
-    
+
     padding: 1em;
 
     line-height: 1.2em;
@@ -78,7 +78,7 @@ a:hover  { color: #ccc; }
 
 #edit {
     white-space: pre-wrap;
-    
+
     color: #999;
     background-color: #f6f6f6;
 }
@@ -99,6 +99,7 @@ h3 {
 }
 
 .box-content {
+    width: 90%;
     max-width: 600px;
     margin: 0 auto;
 }
