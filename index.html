@@ -25,7 +25,7 @@
 	    <!-- text corpus -->
 	    <h3>import text corpus</h3>
 	    <div class="settings-item" title="import words from literature or arbitrary text files.">
-	      <div class="settings-item-head">source</div>
+	      <div class="settings-item-head"><label for="opt-corpus">source</label></div>
 	      <div class="settings-item-body options-group" id="opt-corpus-group">
 		<div class="option">
 		  <input type="radio" name="opt-corpus" id="opt-corpus-alice" value="alice" required checked>
@@ -61,7 +61,7 @@
 	    <h3>generative text</h3>
 	    <!-- inference depth -->
 	    <div class="settings-item" title="inference depth: number of preceding words influencing the probability of the next word. changing the inference depth discards all imported corpora and rebuilds the model.">
-	      <div class="settings-item-head">inference depth</div>
+	      <div class="settings-item-head"><label for="opt-depth">inference depth</label></div>
 	      <div class="settings-item-body options-group" id="opt-depth-group">
 		<div class="option">
 		  <input type="radio" name="opt-depth" id="opt-depth-0" value="0" required>
@@ -84,7 +84,7 @@
 	    <!-- delay -->
 	    <div class="settings-item" title="delay: amount of time to wait before beginning to generate text.">
 	      <div class="settings-item-head"><label for="rng-delay">delay</label></div>
-	      <div class="settings-item-body"><input type="range" name="rng-delay" id="rng-delay" min="0" max="1" step="0.05" value="0.6"></div>
+	      <div class="settings-item-body"><input type="range" name="rng-delay" id="rng-delay" min="0" max="1" step="0.05" value="0.4"></div>
 	    </div>
 	    <!-- frequency -->
 	    <div class="settings-item" title="frequency: rate at which subsequent words are generated once generative text is engaged.">

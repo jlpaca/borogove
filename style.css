@@ -19,9 +19,11 @@ body {
     background-color: #fff;
 }
 
+h1 { margin: 0; padding: 1em 0; }
+
 .boxquote {
     font-style: italic;
-    margin: 2em 0;
+    margin-bottom: 2em;
 }
 .boxquote > .quote-txt {
     text-align: center;
@@ -48,7 +50,7 @@ a:link {
     color: #666;
     transition: color .1s;
 }
-nav,h1 > a:link { text-decoration: none; }
+nav > a:link, h1 > a:link { text-decoration: none; }
 h1 > a:link { color: inherit; }
 a:visited { color: #666; }
 a:hover  { color: #ccc; }
