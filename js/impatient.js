@@ -183,7 +183,7 @@
 	    imp_freeze_corpus_btn(true);
 
 	    // fetch corpus json
-	    let url = 'http://localhost:8000/corpus/' +  v + '.json';
+	    let url = 'corpus/' +  v + '.json';
 	    ret = get_corpus_from_url(url);
 	}
 	ret.then(
